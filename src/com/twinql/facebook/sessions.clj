@@ -2,9 +2,9 @@
 
 (defn new-session
   "Return a new session with version etc."
-  ([api-key method]
+  ([method api-key]
    (new-session api-key method "1.0"))
-  ([api-key method version]
+  ([method api-key version]
    { :v version
      :api_key api-key
      :method method

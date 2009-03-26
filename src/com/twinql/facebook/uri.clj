@@ -1,13 +1,5 @@
 (in-ns 'com.twinql.facebook)
 
-(defn encode-query [q]
-  "q is a map or list of pairs."
-  (. URLEncodedUtils format
-     (map (fn [[param value]] 
-            (new BasicNameValuePair (str param) (str value)))
-          q)
-     "UTF-8"))
-
 (defn uri-escape [s]
   (. URLEncoder encode s))
 
@@ -30,7 +22,35 @@
     
 (defn parameter-string
   [pairs]
-  (apply str (map #(let [[key val] %]
-                     (str (name key) "="
-                          (parameter-value val)))
+  (apply str (map (fn [[key val]]
+                    (str (name key) "="
+                         (parameter-value val)))
                   pairs)))
+
+(defn encode-query [q]
+  "q is a map or list of pairs."
+  (. URLEncodedUtils format
+     (map (fn [[param value]] 
+            (new BasicNameValuePair (str param) (str value)))
+          q)
+     "UTF-8"))
+
+(defn non-encoded-query [q]
+  "Make a query string from a map, encoding only components."
+  (apply str (interpose
+               "&"
+               (map #(let [[key val] %]
+                       (str (uri-escape (name key)) "="
+                            (uri-escape
+                              (parameter-value val))))
+                    q))))
+
+(defn query->body [q]
+  (new org.apache.http.client.entity.UrlEncodedFormEntity
+       (seq
+         (map (fn [[param value]]
+                (new BasicNameValuePair
+                     (str (name param))
+                     (parameter-value value)))
+              q))
+       "UTF-8"))
