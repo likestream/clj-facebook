@@ -1,0 +1,57 @@
+<project name="clj-facebook" default="jar">
+
+  <property name="src" location="src"/>
+  <property name="clojure.jar" location="../../../code/clojure/clojure.jar"/>
+  <property name="build" location="classes"/>
+
+  <available property="hasclojure" file="${clojure.jar}"/>
+
+  <!-- The JAR file to create. -->
+  <property name="jarfile" location="clj-facebook.jar"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="clean" description="Remove generated files and directories.">
+    <delete file="${jarfile}"/>
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="compile_clojure" depends="init"
+          description="Compile Clojure sources."
+          if="hasclojure">
+    <java classname="clojure.lang.Compile">
+      <classpath>
+        <path location="${build}"/>
+        <path location="${src}"/>
+        <path location="${clojure.jar}"/>
+        
+        <path location="lib/apache-mime4j-0.5.jar"/>
+        <path location="lib/commons-logging-1.1.1.jar"/>
+        <path location="lib/httpmime-4.0-beta2.jar"/>
+        <path location="lib/clojure-json.jar"/>
+        <path location="lib/httpclient-4.0-beta2.jar"/>
+        <path location="lib/commons-codec-1.3.jar"/>
+        <path location="lib/httpcore-4.0-beta3.jar"/>
+      </classpath>
+      
+      <sysproperty key="clojure.compile.path" value="${build}"/>
+      
+      <arg value="uk.co.holygoat.util.md5"/>
+      <arg value="com.twinql.facebook"/>
+    </java>
+  </target>
+
+  <target name="jar" description="Create jar file." depends="compile_clojure">
+    <jar jarfile="${jarfile}">
+      <fileset dir="${src}" includes="**/*.clj"/>
+      <fileset dir="${build}" includes="**/*.class"/>
+      <manifest>
+        <attribute name="Class-Path" value="."/>
+      </manifest>
+    </jar>
+  </target>
+
+</project>
