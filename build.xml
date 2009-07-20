@@ -1,7 +1,8 @@
 <project name="clj-facebook" default="jar">
 
   <property name="src" location="src"/>
-  <property name="clojure.jar" location="../../../code/clojure/clojure.jar"/>
+  <property name="clojure.jar" location="/Users/rnewman/code/clojure/clojure.jar"/>
+  <property name="clojure.contrib.jar" location="/Users/rnewman/code/clojure/contrib/clojure-contrib.jar"/>
   <property name="build" location="classes"/>
 
   <available property="hasclojure" file="${clojure.jar}"/>
@@ -27,20 +28,28 @@
         <path location="${build}"/>
         <path location="${src}"/>
         <path location="${clojure.jar}"/>
+        <path location="${clojure.contrib.jar}"/>
         
+        <path location="lib/clojure-json.jar"/>
         <path location="lib/apache-mime4j-0.5.jar"/>
         <path location="lib/commons-logging-1.1.1.jar"/>
         <path location="lib/httpmime-4.0-beta2.jar"/>
-        <path location="lib/clojure-json.jar"/>
         <path location="lib/httpclient-4.0-beta2.jar"/>
         <path location="lib/commons-codec-1.3.jar"/>
         <path location="lib/httpcore-4.0-beta3.jar"/>
+        <path location="lib/clj-apache-http.jar"/>
+        <path location="lib/apache-mime4j-0.5.jar"/>
       </classpath>
       
       <sysproperty key="clojure.compile.path" value="${build}"/>
       
       <arg value="uk.co.holygoat.util.md5"/>
-      <arg value="com.twinql.facebook"/>
+      <arg value="com.twinql.clojure.facebook.sig"/>
+      <arg value="com.twinql.clojure.facebook.errors"/>
+      <arg value="com.twinql.clojure.facebook.auth"/>
+      <arg value="com.twinql.clojure.facebook.request"/>
+      <arg value="com.twinql.clojure.facebook.sessionless"/>
+      
     </java>
   </target>
 
