@@ -1,10 +1,10 @@
-(ns com.twinql.facebook
-  (:require clojure.contrib.zip-filter.xml)
+(ns com.twinql.clojure.facebook
   (:refer-clojure)
   (:refer clojure.xml)
-  (:refer clojure.contrib.zip-filter.xml)
-  (:use
-     (uk.co.holygoat.util md5))
+  (:use clojure.contrib.zip-filter.xml)
+  (:require [com.twinql.clojure.http :as http])
+  (:require [org.danlarkin.json :as json])
+  (:use uk.co.holygoat.util.md5)
   (:import 
      (java.lang Exception)
      (java.net URI URLEncoder)
@@ -18,10 +18,9 @@
      (org.apache.http.message BasicNameValuePair)
      (org.apache.http.impl.client DefaultHttpClient BasicResponseHandler)))
 
-(load "facebook/uri")
 (load "facebook/sessions")
 (load "facebook/auth")
-(load "facebook/errors")
 (load "facebook/xml")
-(load "facebook/facebook")
+(load "facebook/sessionless")
+(load "facebook/api")
 

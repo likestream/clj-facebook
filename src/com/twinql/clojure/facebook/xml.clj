@@ -1,4 +1,4 @@
-(in-ns 'com.twinql.facebook)
+(in-ns 'com.twinql.clojure.facebook)
 
 (defn process-facebook-xml
   "Takes a stream as input."
