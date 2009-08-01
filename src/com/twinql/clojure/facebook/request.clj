@@ -10,6 +10,8 @@
      [org.danlarkin.json :as json]))
 
 (def *facebook-rest-api* (new URI "http://api.facebook.com/restserver.php"))
+(def *facebook-login* (new URI "http://www.facebook.com/login.php"))
+(def *facebook-authorize* (new URI "http://www.facebook.com/authorize.php"))
 
 (defmethod http/entity-as :json [entity as]
   (json/decode-from-reader (http/entity-as entity :reader)))
@@ -33,3 +35,36 @@
                        (merge session args)
                        secret)
               :as :json)))
+
+(defn login-url
+  "Produce a URI to redirect a user to the Facebook login page to authorize
+  your application. Call within a with-session form."
+  ;; TODO: redirect to canvas?
+  
+  ([next-url]
+   (http/resolve-uri *facebook-login* (assoc *session* :next next-url)))
+  ([next-url cancel-url]
+   (http/resolve-uri *facebook-login* (assoc *session*
+                                             :next next-url
+                                             :next_cancel cancel-url))))
+
+(defn authorize-url
+  "Permissions should be a string or a sequence of strings.
+  See <http://wiki.developers.facebook.com/index.php/Extended_permissions>."
+  ([permissions next-url cancel-url]
+   (http/resolve-uri *facebook-authorize*
+                     (assoc *session*
+                            :ext_perm permissions
+                            :next next-url
+                            :next_cancel cancel-url)))
+  ([permissions next-url]
+   (http/resolve-uri *facebook-authorize*
+                     (assoc *session*
+                            :ext_perm permissions
+                            :next next-url))))
+
+;; Post-auth callback URL.
+;; Post-remove callback URL.
+;; Information update callback URL.
+;; Publish callback URL.
+;; Self-publish.
