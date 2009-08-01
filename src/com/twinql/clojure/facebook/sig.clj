@@ -74,6 +74,9 @@
 (defn params-for-signature [params]
   (rename-keys-with params facebook-sig-param-name))
 
+;; TODO: it would be nice to augment this with a real Compojure middleware 
+;; function, so developers can wrap their handlers in a 
+;; "with-signature-verification" form.
 (defn verify-sig
   "Returns the parameters on success; throws an exception on failure."
   [params secret]
