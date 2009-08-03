@@ -1,8 +1,7 @@
 (ns com.twinql.clojure.facebook.handlers
   (:refer-clojure)
   (:use com.twinql.clojure.facebook.sig)
-  ;(:use compojure)
-  )
+  (:use com.twinql.clojure.facebook.sessions))
   
 ;;; The Compojure integration point.
 ;;; Handles Facebook callbacks.
@@ -104,6 +103,7 @@
   
 (def facebook-post-auth-callback-parameters
   {:fb_sig_install fb-true?
+   :fb_sig_uninstall fb-true?
    :fb_sig_authorize fb-true?
    :fb_sig_added fb-true?
    :fb_sig_profile_update_time str->timestamp
@@ -149,7 +149,14 @@
            facebook-post-auth-callback-parameters
            facebook-parameters)
     params))
-
+  
+(defn process-params
+  "Transforms request parameters and verifies the signature.
+  Raises an exception on failure."
+  [params]
+  (fb-params
+    (verify-sig params *secret*)))
+  
 ;; Example interaction.
 ;; Several of these params are not present in the docs.
  
