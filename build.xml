@@ -1,8 +1,8 @@
 <project name="clj-facebook" default="jar">
 
   <property name="src" location="src"/>
-  <property name="clojure.jar" location="/Users/rnewman/code/clojure/clojure.jar"/>
-  <property name="clojure.contrib.jar" location="/Users/rnewman/code/clojure/contrib/clojure-contrib.jar"/>
+  <property name="clojure.jar" location="/opt/clojure/clojure.jar"/>
+  <property name="clojure.contrib.jar" location="/opt/clojure-contrib/clojure-contrib.jar"/>
   <property name="build" location="classes"/>
 
   <available property="hasclojure" file="${clojure.jar}"/>
@@ -48,6 +48,7 @@
       <arg value="com.twinql.clojure.facebook.errors"/>
       <arg value="com.twinql.clojure.facebook.auth"/>
       <arg value="com.twinql.clojure.facebook.request"/>
+      <arg value="com.twinql.clojure.facebook.sessions"/>
       <arg value="com.twinql.clojure.facebook.sessionless"/>
       <arg value="com.twinql.clojure.facebook.handlers"/>
     </java>
