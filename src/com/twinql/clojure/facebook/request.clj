@@ -40,7 +40,8 @@
   "Produce a URI to redirect a user to the Facebook login page to authorize
   your application. Call within a with-session form."
   ;; TODO: redirect to canvas?
-  
+  ([]
+   (http/resolve-uri *facebook-login* *session*))
   ([next-url]
    (http/resolve-uri *facebook-login* (assoc *session* :next next-url)))
   ([next-url cancel-url]

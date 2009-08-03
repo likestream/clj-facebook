@@ -61,10 +61,10 @@
   (complement nil?))     ; Whether a param exists.
 
 (defn str->int [x]
-  x)
+  (Long/parseLong x))
 
 (defn str->timestamp [x]
-  x)
+  (Double/parseDouble x))
 
 (defn decode-json-array [x]
   x)
@@ -75,15 +75,43 @@
         (:fb_sig_profile_session_key params))))
 
 
+;; Post-auth callback gets hit with:
+;  {:fb_sig_expires "1249347600",
+;   :fb_sig_session_key "2.TzF6Xbvbvfov1S4Mq4_QAw__.86400.1249347600-100000037364957",
+;   :fb_sig_app_id "103381584023",
+;   :fb_sig_ext_perms "auto_publish_recent_activity",
+;   :fb_sig_locale "en_US",
+;   :fb_sig_in_new_facebook true,
+;   :fb_sig_user "100000037364957",
+;   :fb_sig_time "1249259912.755",
+;   :fb_sig_authorize "1",
+;   :fb_sig "1da7f45a1b01fc5f5246d41c742cf3f9",
+;   :fb_sig_api_key "323ba847e1fc870fd7ee26e5d23ae100",
+;   :fb_sig_added true,
+;   :fb_sig_profile_update_time "1247266739",
+;   :fb_sig_ss "rqZx7N65Ad90sU_oPDH85Q__"}
+
+;; Post-remove callback gets:
+;  {:fb_sig "2b3e9d1eaef93931e715e4d8f19c13a6", 
+;   :fb_sig_app_id "103381584023", 
+;   :fb_sig_api_key "323ba847e1fc870fd7ee26e5d23ae100", 
+;   :fb_sig_user "100000037364957", 
+;   :fb_sig_added false, 
+;   :fb_sig_time 1.2492621479616E9, 
+;   :fb_sig_in_new_facebook true, 
+;   :fb_sig_locale "en_US", 
+;   :fb_sig_uninstall "1"}
+  
 (def facebook-post-auth-callback-parameters
   {:fb_sig_install fb-true?
+   :fb_sig_authorize fb-true?
+   :fb_sig_added fb-true?
    :fb_sig_profile_update_time str->timestamp
    :fb_sig_session_key identity
-   :fb_sig_expires str->int})
+   :fb_sig_expires str->timestamp})
 
 (def facebook-parameters
   {:fb_sig identity           ; Signature.
-   :fb_sig_added fb-true?
    :fb_sig_api_key identity
    :fb_sig_friends identity
    :fb_sig_locale identity
@@ -92,10 +120,12 @@
    :fb_sig_user identity
    :fb_sig_canvas_user identity
    :fb_sig_profile_user identity
+   :fb_sig_ext_perms identity    ; TODO: list.
    :fb_sig_linked_account_ids decode-json-array})
 
 (def facebook-request-parameters
-  {:fb_sig_in_canvas fb-true?
+  {:installed fb-true?                       ; Not included in sig!
+   :fb_sig_in_canvas fb-true?
    :fb_sig_in_iframe fb-true?
    :fb_sig_in_profile_tab present?
    :fb_sig_profile_user identity
@@ -119,18 +149,69 @@
            facebook-post-auth-callback-parameters
            facebook-parameters)
     params))
-  
-;; Example params when loading an iframe, no auth.
-;; Several of these are not present in the docs.
-#_
-{
- :fb_sig "dafb43c8906eae472c66b1be4857f580", 
- :fb_sig_app_id "103381584023", 
- :fb_sig_api_key "323ba847e1fc870fd7ee26e5d23ae100", 
- :fb_sig_canvas_user "100000037364957", 
- :fb_sig_added "0", 
- :fb_sig_time "1249101223.507", 
- :fb_sig_in_new_facebook "1", 
- :fb_sig_locale "en_US", 
- :fb_sig_in_iframe "1"
- }
+
+;; Example interaction.
+;; Several of these params are not present in the docs.
+ 
+(comment
+  ;; postremove: 
+  {:fb_sig "8e83223494c783e906cd9e328ea63a0a", 
+   :fb_sig_app_id "103381584023", 
+   :fb_sig_api_key "323ba847e1fc870fd7ee26e5d23ae100", 
+   :fb_sig_user "100000037364957", 
+   :fb_sig_added false, 
+   :fb_sig_time 1.249266994871E9, 
+   :fb_sig_in_new_facebook true, 
+   :fb_sig_locale "en_US", 
+   :fb_sig_uninstall "1"}
+
+  ;; Accessed main canvas page.
+  {:fb_sig_in_iframe true, 
+   :fb_sig_locale "en_US", 
+   :fb_sig_in_new_facebook true, 
+   :fb_sig_time 1.2492669989763E9, 
+   :fb_sig_added false, 
+   :fb_sig_api_key "323ba847e1fc870fd7ee26e5d23ae100", 
+   :fb_sig_app_id "103381584023", 
+   :fb_sig "20d12200fb682e76785dd795123d45c1"}
+ 
+  ;; User goes through login process.
+  ;; postauth: 
+  {:fb_sig_expires 1.2493548E9, 
+   :fb_sig_session_key "2.tt5ydKFwcxgM551xqwlbwQ__.86400.1249354800-100000037364957", 
+   :fb_sig_app_id "103381584023", 
+   :fb_sig_ext_perms "auto_publish_recent_activity", 
+   :fb_sig_locale "en_US", 
+   :fb_sig_in_new_facebook true, 
+   :fb_sig_user "100000037364957", 
+   :fb_sig_time 1.249267013431E9, 
+   :fb_sig_authorize true, 
+   :fb_sig "c99b0d3edb105cb5c2dece14ba66bdb1", 
+   :fb_sig_api_key "323ba847e1fc870fd7ee26e5d23ae100", 
+   :fb_sig_added true, 
+   :fb_sig_profile_update_time 1.247266739E9, 
+   :fb_sig_ss "C9GBKaC1FgOv7pbkLBUbSQ__"}
+
+  ;; ... handling user login uses these params:
+  {:fb_sig_expires 1.2493548E9, :fb_sig_authorize true, :fb_sig_user "100000037364957"}
+
+  ;; Accessed needs-login page.
+  {:fb_sig_expires 1.2493548E9, 
+   :fb_sig_session_key "2.tt5ydKFwcxgM551xqwlbwQ__.86400.1249354800-100000037364957", 
+   :fb_sig_app_id "103381584023", 
+   :fb_sig_ext_perms "auto_publish_recent_activity", 
+   :fb_sig_locale "en_US", 
+   :fb_sig_in_new_facebook true, 
+   :fb_sig_user "100000037364957", 
+   :fb_sig_time 1.2492670149054E9, 
+   :fb_sig_in_iframe true, 
+   :fb_sig "b7cccc3bb7d8f6a3d484e1dda6252fba", 
+   :fb_sig_api_key "323ba847e1fc870fd7ee26e5d23ae100", 
+   :fb_sig_added true, 
+   :fb_sig_profile_update_time 1.247266739E9, 
+   :fb_sig_ss "C9GBKaC1FgOv7pbkLBUbSQ__"
+   
+   ;; These two come as GET params from the user themselves.
+   :installed true, 
+   :auth_token "1937b4edb2b73b819a5854ac19d52669", 
+   })
