@@ -4,6 +4,8 @@ A client API for Facebook.
 
 # What is supported? #
 
+## Client ##
+
 Currently, requesting tokens, maintaining and incrementing session properties,
 and performing sessionless requests. For example:
 
@@ -55,3 +57,12 @@ calling `fetch-session`), whilst the secret is used for signing each request.
 
 You should define suitable macros to simplify your code in the most suitable
 way for how you use the Facebook API.
+
+## Server ##
+
+On the server side, some utilities are provided to aid in the development of
+(primarily iframe) applications: processing known Facebook request parameters;
+verifying signatures; generating Facebook login URLs, etc.
+
+These are demonstrated by the test application in `test.clj`, currently
+deployed at http://apps.facebook.com/cljtest/.
