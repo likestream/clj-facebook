@@ -26,6 +26,7 @@
   (:use com.twinql.clojure.facebook.sig)
   (:use com.twinql.clojure.facebook.request)
   (:use com.twinql.clojure.facebook.sessions)
+  (:require [com.twinql.clojure.facebook.session-required :as fb])
   (:use com.twinql.clojure.facebook.handlers))
 
 ;; Trivial storage of logged-in users.
@@ -52,7 +53,8 @@
      (let [~'params (process-params ~'params)]
        (when *print-fb-params?*
          (prn ~'params))
-       ~@body)))
+       (with-session-key ~'params
+         ~@body))))
 
 ;; Take the parameters received by the post-auth handler,
 ;; mutating the users map.
@@ -107,11 +109,17 @@
   (GET "/test/canvas/needslogin"
     (println "# Accessed needs-login page.")
     (with-fb-params
-      (html
-        [:h1 "This page requires login."]
-        (if (user-logged-in? params)
-          (html [:p "Looks like you're good!"])
-          (html [:p "Hey, you're not logged in!"])))))
+      (let [this-user (:fb_sig_user params)]
+        (html
+          [:h1 "This page requires login."]
+          (if (user-logged-in? params)
+            (html
+              [:p
+               [:b "Your current status: "]
+               (with-new-fb-session []
+                 (html
+                   (-> (fb/status-get this-user 1) first :message str)))])
+            (html [:p "Hey, you're not logged in!"]))))))
 
            
   ;; iframes are the ugly duckling of Facebook applications.

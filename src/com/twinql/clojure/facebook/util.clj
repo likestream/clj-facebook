@@ -51,3 +51,8 @@
       (string? x) x
       (keyword? x) (name x))
     (str x)))
+
+(defn assoc-when [coll key val]
+  (if val
+    (assoc coll key val)
+    coll))

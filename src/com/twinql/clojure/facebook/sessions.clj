@@ -10,6 +10,12 @@
 ;; Bind this to your secret key.
 (defonce *secret* nil)
 
+;; Bind this to the user's session (from params, probably).
+(defonce *session-key* nil)
+
+(defmacro with-session-key [params & body]
+  `(binding [*session-key* (:fb_sig_session_key ~params)] ~@body))
+
 (defn new-fb-session
   "Return a new session with version etc.
   The return value needs to be augmented with a method for some calls."
@@ -20,7 +26,7 @@
   ([api-key version]
    { :v version
      :api_key api-key
-     :session-id 0 }))
+     :call_id 0 }))
 
 (defn fetch-session
   "Return an equivalent session with a later ID.
@@ -31,8 +37,8 @@
      (var-set *session* (fetch-session current))
      current))
   ([session]
-   (assoc session :session-id
-          (inc (:session-id session)))))
+   (assoc session :call_id
+          (inc (:call_id session)))))
 
 (defmacro with-fb-session [session & body]
   `(binding [*session* ~session]

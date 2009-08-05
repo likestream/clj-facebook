@@ -2,6 +2,7 @@
   (:refer-clojure)
   (:use com.twinql.clojure.facebook.sessions)
   (:use com.twinql.clojure.facebook.sig)
+  (:use com.twinql.clojure.facebook.util)
   (:import 
      (java.lang Exception)
      (java.net URI URLEncoder))
@@ -32,7 +33,9 @@
      (throw (new Exception "No session. Use with-new-session to establish one.")))
    (http/post *facebook-rest-api*
               :query (add-signature
-                       (merge session args)
+                       (assoc-when
+                         (merge session args)
+                         :session_key *session-key*)
                        secret)
               :as :json)))
 
