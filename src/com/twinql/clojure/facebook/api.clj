@@ -38,7 +38,7 @@
 (defmacro def-fb-api-call [name method & opt]
   (let [{:keys [docstring required optional other-args other-map]}
         (apply hash-map opt)]
-    `(defn ~name ~docstring
+    `(defn ~name ~(or docstring (str name ": " required))
        ~(vec (concat (args->arglist required)
                      other-args
                      (args->arglist optional)  ; Not really optional, just nil.
