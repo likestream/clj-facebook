@@ -1,6 +1,20 @@
 (ns com.twinql.clojure.facebook.util
   (:refer-clojure))
 
+(defmacro unless [x & body]
+  `(when (not ~x)
+     ~@body))
+
+(defn #^String as-str
+  "Because contrib's isn't typed correctly."
+  [x]
+  (if (instance? clojure.lang.Named x)
+    (name x)
+    (str x)))
+
+(defn seq->comma-separated [x]
+  (apply str (interpose \,)))
+
 (defn time->unix [x]
   (cond
     (number? x)
