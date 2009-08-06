@@ -13,7 +13,9 @@
 
 (defn- args->map [args]
   (into {} (map (fn [[arg key val-trans]]
-                  [key (list val-trans arg)])
+                  [key (if val-trans
+                         (list val-trans arg)
+                         arg)])
                 args)))
 
 (defn- optional-args->assoc-form [input args]
@@ -26,7 +28,7 @@
            (if y#
              (assoc ~(optional-args->assoc-form
                        val-gen (rest args))
-                    ~key (~val-trans y#))
+                    ~key (~(or val-trans identity) y#))
              ~val-gen)))
       input)))
          
