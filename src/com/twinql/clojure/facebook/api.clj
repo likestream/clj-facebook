@@ -31,18 +31,39 @@
                     ~key (~(or val-trans identity) y#))
              ~val-gen)))
       input)))
-         
+     
+(defn- session-key-checker-form [name]
+  `(unless *session-key*
+     (throw (new Exception (str "No session key provided to " ~name)))))
+
+(defn- v-form [v]
+  `(or ~v
+       (throw 
+         (new Exception (str "Validation failed: " ~v)))))
+
+(defn- validation-form [name validation]
+  `(and 
+     ~@(map v-form validation)))
+
 ;; Rough edge: these generated functions currently have a fixed
 ;; arglist, so no optionals, no keyword parameters. Etc.
 ;; Also, this looks damn ugly. Sorry.
 (defmacro def-fb-api-call [name method & opt]
-  (let [{:keys [docstring required optional other-args other-map]}
+  (let [{:keys [docstring required optional other-args other-map
+                validation
+                session-required?]}
         (apply hash-map opt)]
     `(defn ~name ~(or docstring (str name ": " required))
        ~(vec (concat (args->arglist required)
                      other-args
-                     (args->arglist optional)  ; Not really optional, just nil.
-                     ))
+                     ;; Could do something fancy to define multiple arity
+                     ;; versions with real optional arguments... or take the keyword
+                     ;; approach...
+                     (args->arglist optional)))
+       ~(when session-required?
+          (session-key-checker-form name))
+       ~(when validation
+          (validation-form name validation))
        (response->content
          (make-facebook-request
            ~(optional-args->assoc-form
