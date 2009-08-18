@@ -1,3 +1,9 @@
+;;; 
+;;; TODO: all of these calls need to be tested. Some have ill-defined response
+;;; types, or might not work at all.
+;;; Remember, this is a first draft!
+;;; 
+
 (ns com.twinql.clojure.facebook.session-required
   (:refer-clojure)
   (:require [org.danlarkin.json :as json])
@@ -91,4 +97,26 @@
    "Returns the user's current and most recent statuses. Takes optional uid and
    limit arguments, both integers."
    :optional [[uid :uid]
-              [limit :limit]]])
+              [limit :limit]]]
+  
+  ;; TODO: the documentation for this call is sparse. It might return only
+  ;; XML.
+  [notifications-get-list "notifications.getList"
+   :docstring
+   "This method gets all the current session user's notifications, as well as
+   data for the applications that generated those notifications. It is a
+   wrapper around the notification and application FQL tables; you can achieve
+   more fine-grained control by using those two FQL tables in conjunction with
+   the fql.multiquery API call."
+   :optional [[start-time :start_time time->unix]
+              [include-read :include_read as-bool]]]
+  
+  ;; Returns true or false.
+  [notifications-mark-read "notifications.markRead"
+   :docstring
+   "This method marks one or more notifications as read. You return the
+   notifications by calling notifications.getList or querying the notification
+   FQL table.
+   Applications must pass a valid session key, and can only mark the
+   notifications of the current session user."
+   :required [[notification-ids :notification_ids seq->comma-separated]]])

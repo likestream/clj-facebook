@@ -15,6 +15,9 @@
 (defn seq->comma-separated [x]
   (apply str (interpose \,)))
 
+(defn as-bool [x]
+  (if x "true" "false"))
+
 (defn time->unix [x]
   (cond
     (number? x)
