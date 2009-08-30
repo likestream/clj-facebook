@@ -81,7 +81,11 @@
         (dosync
           (if authorized?
             (alter *users* assoc user until)
-            (alter *users* dissoc user)))))))
+            (alter *users* dissoc user)))
+        
+        ;; Now update disk version.
+        (with-open [f (java.io.FileWriter. "/opt/clj/users.clojure")]
+          (.write f (prn-str @*users*)))))))
 
 (defn handle-user-logout [params]
   (println "# ... handling user logout with params:")
@@ -156,6 +160,14 @@
   (GET "/*"
     (println "# Accessed default page.")
     (html [:h1 "Hello World"])))
+
+;; Load users.
+(println
+  "Users are"
+  (dosync
+    (ref-set *users*
+             (read-string
+               (slurp "/opt/clj/users.clojure")))))
 
 ;; Run this behind pound, URL prefix /test/.
 ;; See http://www01.siptone.net/test/
