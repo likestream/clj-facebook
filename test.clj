@@ -5,6 +5,8 @@
 ;;; Y'might want to switch to clj-html for HTML output; it's substantially
 ;;; quicker than Compojure's builtins. It uses the same technique as CL-WHO for
 ;;; optimizing output.
+;;; 
+;;; Note that this test page does no escaping!
 ;;;
 ;;; Current Facebook app settings:
 ;;; 
