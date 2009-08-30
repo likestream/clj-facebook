@@ -14,12 +14,12 @@ and performing sessionless requests. For example:
     (use 'com.twinql.clojure.facebook.sessions)
     (use 'com.twinql.clojure.facebook.sessionless)
      
-    (with-new-session []
+    (with-new-fb-session []
       (admin-get-allocation "notifications_per_day"))
     =>
     10
 
-    (with-new-session []
+    (with-new-fb-session []
       (admin-get-metrics ["active_users"] (last-day)))
     =>
     [{:active_users 0, :end_time "1247986800"}]
@@ -34,13 +34,13 @@ Facebook applications authenticate themselves with an API key and a secret key.
 `com.twinql.clojure.facebook.sessions/*api-key*` (you can use `alter-var-root`
 for this), or for `*secret*` to be be bound by `with-secret-key` and the API
 key to be passed in to `new-session` or the argument list of
-`with-new-session`. For example:
+`with-new-fb-session`. For example:
 
     (use 'com.twinql.clojure.facebook.sessions)
 
     ;; Per-thread-binding.
     (with-secret-key "my-secret-key"
-      (with-new-session ["my-api-key"]
+      (with-new-fb-session ["my-api-key"]
         ;; Do stuff here.
         ))
 
