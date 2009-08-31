@@ -25,12 +25,7 @@
 (ns test
   (:refer-clojure)
   (:use compojure)
-  (:use com.twinql.clojure.facebook.sig)
-  (:use com.twinql.clojure.facebook.request)
-  (:use com.twinql.clojure.facebook.sessions)
-  (:use com.twinql.clojure.facebook.sessionless)
-  (:require [com.twinql.clojure.facebook.session-required :as fb])
-  (:use com.twinql.clojure.facebook.handlers))
+  (:require [com.twinql.clojure.facebook :as fb]))
 
 ;; Trivial storage of logged-in users.
 ;; Doesn't persist!
@@ -53,7 +48,7 @@
 ;; signature verification fails.
 (defmacro with-fb-params [m & body]
   `(with-cljtest
-     (let [~'params (process-params ~'params)
+     (let [~'params (fb/process-params ~'params)
            
            ;; Bind a predetermined set of labels to functions of the processed
            ;; parameters.
@@ -63,29 +58,40 @@
                        m))]
        (when *print-fb-params?*
          (prn ~'params))
-       (with-session-key ~'params
+       (fb/with-session-key ~'params
          ~@body))))
 
+(defn persist-users! [users]
+  (with-open [f (java.io.FileWriter. "/opt/clj/users.clojure")]
+    (.write f (prn-str users))))
+
+(defn contains-login-params? [params]
+  (and (or (contains? params :fb_sig_authorize)
+           (contains? params :fb_sig_added))
+       (contains? params :fb_sig_expires)))
+  
 ;; Take the parameters received by the post-auth handler,
 ;; mutating the users map.
-(defn handle-user-login [params]
-  (println "# ... handling user login with params:")
-  (prn (select-keys params [:fb_sig_user, :fb_sig_authorize, :fb_sig_expires]))
-  
-  (when (contains? params :fb_sig_authorize)
-    (let [user (:fb_sig_user params)
-          authorized? (:fb_sig_authorize params)
-          until (:fb_sig_expires params)]
+(defn handle-user-login
+  "Returns whether the user is authorized."
+  [params]
+  (when (contains-login-params? params)
+    (println "# ... handling user login with params:")
+    (prn (select-keys params [:fb_sig_user, :fb_sig_authorize, :fb_sig_expires]))
+    
+    (let [user        (:fb_sig_user params)
+          authorized? (or (:fb_sig_authorize params)
+                          (:fb_sig_added params))    ; Ah, Facebook, your APIs are so shoddy.
+          until       (:fb_sig_expires params)]
+      
       ;; No need to verify the parameters -- process-params already did.
       (when user
-        (dosync
-          (if authorized?
-            (alter *users* assoc user until)
-            (alter *users* dissoc user)))
-        
-        ;; Now update disk version.
-        (with-open [f (java.io.FileWriter. "/opt/clj/users.clojure")]
-          (.write f (prn-str @*users*)))))))
+        (persist-users! 
+          (dosync
+            (if authorized?
+              (alter *users* assoc user until)
+              (alter *users* dissoc user))))
+        authorized?))))
 
 (defn handle-user-logout [params]
   (println "# ... handling user logout with params:")
@@ -95,8 +101,9 @@
     (let [user (:fb_sig_user params)]
       ;; No need to verify the parameters -- process-params already did.
       (when user
-        (dosync
-          (alter *users* dissoc user))))))
+        (persist-users!
+          (dosync
+            (alter *users* dissoc user)))))))
 
 ;; Checks the user from the parameters against the expiry in the users map.
 (defn user-logged-in? [params]
@@ -122,17 +129,28 @@
   ;; An authentication-restricted page.
   (GET "/test/canvas/needslogin"
     (println "# Accessed needs-login page.")
-    (with-fb-params {this-user :fb_sig_user
-                     logged-in? user-logged-in?}
+    (with-fb-params {}
+                    
+      ;; It seems that Facebook has stopped hitting the post-auth URL.
+      ;; Sometimes it will hit the post-remove URL, but not always.
+      ;; The login info seems to be passed in the main page request...
+      ;; maybe related to http://bugs.developers.facebook.com/show_bug.cgi?id=5510,
+      ;; or as discussed on http://forum.developers.facebook.com/viewtopic.php?pid=166927,
+      ;; "Post Authorize/Remove URLs no longer being pinged"?
+      ;; Consequently, we call login right here! It checks for the required params, and
+      ;; doesn't do any work if they're not present.
+      
+      (handle-user-login params)
+      
       (html
         [:h1 "This page requires login."]
-        (if logged-in?
+        (if (user-logged-in? params)
           (html
             [:p
              [:b "Your current status: "]
-             (with-new-fb-session []
+             (fb/with-new-fb-session []
                (html
-                 (-> (fb/status-get this-user 1) first :message str)))])
+                 (-> (fb/status-get (:fb_sig_user params) 1) first :message str)))])
           (html [:p "Hey, you're not logged in!"])))))
 
            
@@ -143,31 +161,42 @@
   ;; <http://www.maybefriday.com/blog/2009/07/facebook-apps-and-iframes/>
   (GET "/test/canvas/"
     (println "# Accessed main canvas page.")
-    (with-fb-params {logged-in? user-logged-in?}
-      (with-new-fb-session [] 
+    (with-fb-params {}
+      (handle-user-login params)
+      (fb/with-new-fb-session [] 
         (html
           [:h1 "Page generated by Clojure."]
-          (if logged-in?
+          (if (user-logged-in? params)
             (html
               [:p "Welcome back!"]
               [:p "Allocation:"]
-              [:p (str (admin-get-allocation "emails_per_day"))])
+              [:p (str (fb/admin-get-allocation "emails_per_day"))])
             (html
               [:p [:a {:target "_parent"
-                       :href (login-url)}
+                       :href (fb/login-url)}
                    "Access the login-required page."]]))))))
 
   (GET "/*"
     (println "# Accessed default page.")
     (html [:h1 "Hello World"])))
 
+(defmacro ignore-errors [& body]
+  `(try
+     (do
+       ~@body)
+     (catch Throwable e#
+       nil)))
+           
 ;; Load users.
 (println
   "Users are"
   (dosync
     (ref-set *users*
-             (read-string
-               (slurp "/opt/clj/users.clojure")))))
+             (or
+               (ignore-errors
+                 (read-string
+                   (slurp "/opt/clj/users.clojure")))
+               {}))))
 
 ;; Run this behind pound, URL prefix /test/.
 ;; See http://www01.siptone.net/test/
