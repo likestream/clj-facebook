@@ -71,13 +71,18 @@
 (defn verify-sig
   "Returns the parameters on success; throws an exception on failure."
   [params secret]
+  (unless secret
+    (throw (new Exception "No secret key provided to verify-sig.")))
   (let [sig (:fb_sig params)
         computed (generate-signature
                    (params-for-signature params)
                     secret)]
+    
+    (unless sig
+      (throw (new Exception "No signature to compare!")))
+            
     (if (= sig computed)
       params
       (throw (new Exception
                   (str "Signature does not match: computed = " computed
                        ", should be " sig "."))))))
-    
