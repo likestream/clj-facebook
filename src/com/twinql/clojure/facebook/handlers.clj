@@ -1,5 +1,6 @@
 (ns com.twinql.clojure.facebook.handlers
   (:refer-clojure)
+  (:use com.twinql.clojure.facebook.util)
   (:use com.twinql.clojure.facebook.sig)
   (:use com.twinql.clojure.facebook.sessions))
   
@@ -52,22 +53,6 @@
 ;   The session secret also gets passed to a SWF object inside your Publisher,
 ;   and can be passed to IFrames rendered with fb:iframe.
 ;   
-
-(defn fb-true? [x]
-  (contains? #{"1" 1 "true" true} x))
-
-(def present?
-  (complement nil?))     ; Whether a param exists.
-
-(defn str->int [x]
-  (Long/parseLong x))
-
-(defn str->timestamp [x]
-  (Double/parseDouble x))
-
-(defn decode-json-array [x]
-  x)
-
 (defn facebook-parameters->session-key [params]
   (when (fb-true? (:fb_sig_added params))
     (or (:fb_sig_session_key params)

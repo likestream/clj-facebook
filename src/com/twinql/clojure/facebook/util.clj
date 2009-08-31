@@ -1,5 +1,6 @@
 (ns com.twinql.clojure.facebook.util
-  (:refer-clojure))
+  (:refer-clojure)
+  (:require [org.danlarkin.json :as json]))
 
 (defmacro unless [x & body]
   `(when (not ~x)
@@ -62,14 +63,41 @@
       (throw (new Exception (str "Unrecognized period " x))))))
 
 ;; Might want to change :foo-bar to "foo_bar", too.
-(defn id->str [x]
+(defn #^String id->str [x]
   (or
     (cond
       (string? x) x
       (keyword? x) (name x))
     (str x)))
 
+(defn fb-true? [x]
+  (contains? #{"1" 1 "true" true} x))
+
+(def present?
+  (complement nil?))     ; Whether a param exists.
+
+(defn str->int [x]
+  (Long/parseLong x))
+
+(defn str->timestamp [x]
+  (Double/parseDouble x))
+
+;; The name is more documentation than anything.
+(defn decode-json-array [x]
+  (json/decode-from-str x))
+
 (defn assoc-when [coll key val]
   (if val
     (assoc coll key val)
     coll))
+
+(defn rename-keys-with
+  "If f returns nil, the key is dropped."
+  [m f]
+  (apply hash-map
+         (mapcat
+           (fn [[k v]]
+             (let [new-key (f k)]
+               (when new-key
+                 [new-key v])))
+           m)))

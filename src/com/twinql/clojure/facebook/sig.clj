@@ -1,5 +1,6 @@
 (ns com.twinql.clojure.facebook.sig
   (:refer-clojure)
+  (:use com.twinql.clojure.facebook.util)
   (:use uk.co.holygoat.util.md5))
 
 ;;; 
@@ -22,12 +23,12 @@
 (defmethod parameter-value clojure.lang.Named [s]
   (parameter-value (name s)))
    
-(defn namestr [x]
+(defn- #^String namestr [x]
   (if (string? x)
     x
     (name x)))
 
-(defn parameter-string
+(defn- #^String parameter-string
   [pairs]
   (apply str (map (fn [[key val]]
                     (str (namestr key) "="
@@ -54,24 +55,14 @@
 ;;; 
 ;;; Verification.
 ;;; 
-(defn rename-keys-with
-  "If f returns nil, the key is dropped."
-  [m f]
-  (apply hash-map
-         (mapcat
-           (fn [[k v]]
-             (let [new-key (f k)]
-               (when new-key
-                 [new-key v])))
-           m)))
  
-(defn facebook-sig-param-name [k]
+(defn- facebook-sig-param-name [k]
   (let [#^String n (name k)]
     ;; Handily drops fb_sig.
     (when (zero? (.indexOf n "fb_sig_"))
       (.substring n 7))))
 
-(defn params-for-signature [params]
+(defn- params-for-signature [params]
   (rename-keys-with params facebook-sig-param-name))
 
 ;; TODO: it would be nice to augment this with a real Compojure middleware 
