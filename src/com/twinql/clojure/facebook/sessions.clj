@@ -48,6 +48,17 @@
   `(with-fb-session (new-fb-session ~@session-args)
      ~@body))
 
+;; We need these because the immigration of symbols
+;; is imperfect. We can't rely on users binding these names.
 (defmacro with-secret-key [secret-key & body]
   `(binding [*secret* ~secret-key]
+     ~@body))
+
+(defmacro with-api-key [api-key & body]
+  `(binding [*api-key* ~api-key]
+     ~@body))
+
+(defmacro with-fb-keys [[api-key secret-key] & body]
+  `(binding [*api-key* ~api-key
+             *secret* ~secret-key]
      ~@body))

@@ -43,8 +43,8 @@
 ;; Use this macro around any code you want to make API
 ;; calls.
 (defmacro with-cljtest [& body]
-  `(binding [*api-key* "323ba847e1fc870fd7ee26e5d23ae100"
-             *secret* "037e6278b8bf2c317b5c5a789c736f2d"]
+  `(fb/with-fb-keys ["323ba847e1fc870fd7ee26e5d23ae100"
+                     "037e6278b8bf2c317b5c5a789c736f2d"]
      ~@body))
 
 ;; Common processing of params.
