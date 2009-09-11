@@ -66,3 +66,136 @@ verifying signatures; generating Facebook login URLs, etc.
 
 These are demonstrated by the test application in `test.clj`, currently
 deployed at http://apps.facebook.com/cljtest/.
+
+## Implemented API ##
+
+### Sessionless ###
+
+admin.banUsers:           admin-ban-users
+admin.getAllocation:      admin-get-allocation
+admin.getAppProperties:   admin-get-app-properties
+admin.getBannedUsers:     admin-get-banned-users
+admin.getMetrics:         admin-get-metrics
+admin.getRestrictionInfo: admin-get-restriction-info
+admin.setAppProperties:   admin-set-app-properties
+admin.setRestrictionInfo: admin-set-restriction-info
+admin.unbanUsers:         admin-unban-users
+
+### Session required ###
+
+auth.expireSession:                 auth-expire-session
+auth.getSignedPublicSessionData:    auth-get-signed-public-session-data
+auth.promoteSession:                auth-promote-session
+connect.getUnconnectedFriendsCount: connect-get-unconnected-friends-count
+events.rsvp:                        events-rsvp
+feed.publishUserAction:             feed-publish-user-action
+friends.areFriends:                 friends-are-friends
+status.get:                         status-get
+notifications.getList:              notifications-get-list
+notifications.markRead:             notifications-mark-read
+
+
+## Not Implemented ##
+
+### Sessionless ###
+
+application.getPublicInfo
+auth.createToken
+auth.getSession
+auth.revokeAuthorization
+auth.revokeExtendedPermission
+batch.run
+connect.registerUsers
+connect.unregisterUsers
+data.getCookies
+data.setCookie
+fbml.deleteCustomTags
+fbml.getCustomTags
+fbml.refreshImgSrc
+fbml.refreshRefUrl
+fbml.registerCustomTags
+fbml.setRefHandle
+fbml.uploadNativeStrings
+feed.deactivateTemplateBundleByID
+feed.getRegisteredTemplateBundleByID
+feed.getRegisteredTemplateBundles
+feed.publishTemplatizedAction
+feed.registerTemplateBundle
+intl.getTranslations
+marketplace.getCategories
+marketplace.getSubCategories
+pages.isAppAdded
+permissions.checkAvailableApiAccess
+permissions.checkGrantedApiAccess
+permissions.grantApiAccess
+permissions.revokeApiAccess
+profile.getInfo
+profile.getInfoOptions
+profile.setInfo
+profile.setInfoOptions
+users.getStandardInfo
+
+### Session required ###
+
+friends.getAppUsers
+friends.getLists
+groups.get
+groups.getMembers
+links.get
+liveMessage.send
+marketplace.getListings
+marketplace.search
+notes.get
+notifications.get
+pages.isAdmin
+pages.isFan
+photos.get
+photos.getAlbums
+photos.getTags
+stream.get
+users.getLoggedInUser
+users.isVerified
+video.getUploadLimits
+video.upload
+
+### Session optional ###
+
+comments.add
+comments.remove
+events.cancel
+events.create
+events.edit
+events.get
+events.getMembers
+fql.multiquery
+fql.query
+friends.get
+friends.getMutualFriends
+links.post
+marketplace.createListing
+marketplace.removeListing
+message.getThreadsInFolder
+notes.create
+notes.delete
+notes.edit
+notifications.send
+notifications.sendEmail
+pages.getInfo
+photos.addTag
+photos.createAlbum
+photos.upload
+profile.getFBML
+profile.setFBML
+status.set
+stream.addComment
+stream.addLike
+stream.getComments
+stream.getFilters
+stream.publish
+stream.remove
+stream.removeComment
+stream.removeLike
+users.getInfo
+users.hasAppPermission
+users.isAppUser
+users.setStatus
