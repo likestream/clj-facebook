@@ -81,6 +81,14 @@ deployed at http://apps.facebook.com/cljtest/.
 * `admin.setRestrictionInfo`: `admin-set-restriction-info`
 * `admin.unbanUsers`:         `admin-unban-users`
 
+* `auth.createToken`: as the function `com.twinql.clojure.facebook.auth/create-token`.
+
+* `application.getPublicInfo`
+* `auth.getSession`
+* `auth.revokeAuthorization`
+* `auth.revokeExtendedPermission`
+
+
 ### Session required ###
 
 * `auth.expireSession`:                 `auth-expire-session`
@@ -99,11 +107,6 @@ deployed at http://apps.facebook.com/cljtest/.
 
 ### Sessionless ###
 
-* `application.getPublicInfo`
-* `auth.createToken`
-* `auth.getSession`
-* `auth.revokeAuthorization`
-* `auth.revokeExtendedPermission`
 * `batch.run`
 * `connect.registerUsers`
 * `connect.unregisterUsers`

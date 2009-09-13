@@ -79,6 +79,30 @@
   If uids is nil, it is omitted from the request."
   :optional [[uids :uids json/encode-to-str]])
 
+(def-fb-api-call
+  application-get-public-info "application.getPublicInfo"
+  :docstring ""
+  :optional [])
+
+(def-fb-api-call
+  auth-get-session "auth.getSession"
+  :docstring "Returns the session key bound to an auth_token, as returned by auth.createToken or in the callback_url. Should be called immediately after the user has logged in.
+  For Facebook canvas pages, the session key is passed to your page using POST with the fb_sig_session_key parameter."
+  :required [[auth_token :auth_token]]
+  :optional [[generate_session_secret :generate-session-secret as-bool]])
+
+(def-fb-api-call
+  auth-revoke-authorization "auth.revokeAuthorization"
+  :docstring "If this method is called for the logged in user, then no further API calls can be made on that user's behalf until the user decides to authorize the application again."
+  :optional [[uid :uid]])
+
+(def-fb-api-call
+  auth-revoke-extended-permission "auth.revokeExtendedPermission"
+  :docstring ""
+  :required [[perm :perm id->str]]
+  :optional [[uid :uid]])
+
+
 (comment
   (with-new-session []
     (admin-get-allocation "notifications_per_day"))
