@@ -67,7 +67,11 @@
                 session-required?]}
         (apply hash-map opt)
         args-var (gensym "args")]
-    `(defn ~name ~(or docstring (str name ": " required))
+    `(defn ~name ~(str (or docstring (str name ": " required))
+                       (if optional
+                         (apply str "\nKeyword arguments:\n\t"
+                                (interpose "\n\t" (args->arglist optional)))
+                         ""))
        ~(vec (concat (args->arglist required)
                      other-args
                      ;; Could do something fancy to define multiple arity

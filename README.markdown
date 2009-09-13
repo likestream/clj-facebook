@@ -27,6 +27,23 @@ and performing sessionless requests. For example:
 Bad requests will throw an exception (currently with a descriptive message but
 no useful programmatic attributes).
 
+Facebook API calls have required arguments (which appear directly in the
+arglist), and optional arguments (which are encoded as keyword arguments). These are included in the docstring for each function. For example:
+
+    user=> (doc feed-publish-user-action)    
+    -------------------------
+    com.twinql.clojure.facebook/feed-publish-user-action
+    ([template-bundle-id template-data & args627])
+      Publishes a story on behalf of the user owning the session, using the
+       specified template bundle. By default, this method can publish one line
+       stories to the user's Wall only.
+    Keyword arguments:
+      target-ids
+      body-general
+      story-size
+      user-message
+
+
 Facebook applications authenticate themselves with an API key and a secret key.
 
 `clj-facebook` expects these to either live in
