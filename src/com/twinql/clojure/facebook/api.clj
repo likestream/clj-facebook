@@ -18,20 +18,33 @@
                          arg)])
                 args)))
 
-(defn- optional-args->assoc-form [input args]
-  (let [arg (first args)]
-    (if arg
-      (let [[var key val-trans] arg
-            val-gen (gensym)]
-        `(let [~val-gen ~input
-               y# ~var]
-           (if y#
-             (assoc ~(optional-args->assoc-form
-                       val-gen (rest args))
-                    ~key (~(or val-trans identity) y#))
-             ~val-gen)))
-      input)))
-     
+(defn- optional-args->assoc-form
+  "Generate a form which associates the args into a map if they are 
+  non-nil. Used to allow nil optional arguments without sending them
+  as part of a request."
+  [input args]
+  
+  ;; Can't just use the multiple value version of assoc: we don't want
+  ;; to associate if the value is nil.
+  ;; At least we can use transients to make this a little faster.
+  (list 'persistent!
+        (loop [arg (first args)
+               res (rest args)
+               in  (list 'transient input)]
+          (if arg
+            (let [[var key val-trans] arg
+                  g (gensym)]
+              (recur (first res)
+                     (rest res)
+                     `(let [~g ~in]
+                        (if (nil? ~var)
+                          ~g
+                        (assoc! ~g ~key
+                                ~(if val-trans
+                                   (list val-trans var)
+                                   var))))))
+            in))))
+
 (defn- session-key-checker-form [name]
   `(unless *session-key*
      (throw (new Exception (str "No session key provided to " ~name)))))
@@ -52,24 +65,29 @@
   (let [{:keys [docstring required optional other-args other-map
                 validation
                 session-required?]}
-        (apply hash-map opt)]
+        (apply hash-map opt)
+        args-var (gensym "args")]
     `(defn ~name ~(or docstring (str name ": " required))
        ~(vec (concat (args->arglist required)
                      other-args
                      ;; Could do something fancy to define multiple arity
                      ;; versions with real optional arguments... or take the keyword
                      ;; approach...
-                     (args->arglist optional)))
-       ~(when session-required?
-          (session-key-checker-form name))
-       ~(when validation
-          (validation-form name validation))
-       (response->content
-         (make-facebook-request
-           ~(optional-args->assoc-form
-              (assoc
-                (merge (args->map required)
-                       other-map)
-                :method method
-                :format "JSON")
-              optional))))))
+                     (when optional
+                       `(& ~args-var))))
+       (let [~@(when optional
+                 (list {:keys (args->arglist optional)}
+                       args-var))]
+         ~(when session-required?
+            (session-key-checker-form name))
+         ~(when validation
+            (validation-form name validation))
+         (response->content
+           (make-facebook-request
+             ~(optional-args->assoc-form
+                (assoc
+                  (merge (args->map required)
+                         other-map)
+                  :method method
+                  :format "JSON")
+                optional)))))))
