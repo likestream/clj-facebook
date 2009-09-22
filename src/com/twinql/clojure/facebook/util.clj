@@ -101,3 +101,10 @@
                (when new-key
                  [new-key v])))
            m)))
+
+(defn string-set-checker
+  "Returns a predicate that checks for its argument in the set.
+  Works on strings, symbols, or keywords."
+  [string-set]
+  (fn [x]
+    (contains? string-set (as-str x))))
