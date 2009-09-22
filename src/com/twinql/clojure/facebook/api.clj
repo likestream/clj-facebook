@@ -77,6 +77,9 @@
    Optional arguments are provided as keywords:
   
       :docstring:  self-explanatory.
+      :response:   sometimes Facebook's JSON response is inadequate; e.g.,
+                   using 0 or 1 as truth values (sometimes as well as false!).
+                   This option can specify a post-processing function.
       :required:   a sequence of required arguments. (See below.)
       :optional:   similarly for optional arguments, which are treated as
                    keyword arguments.
@@ -99,9 +102,11 @@
   [name method & opt]
   (let [{:keys [docstring required optional other-args other-map
                 validation
-                session-required?]}
+                session-required?
+                response]}
         (apply hash-map opt)
-        args-var (gensym "args")]
+        args-var (gensym "args")
+        output-var (gensym "output")]
     
     `(defn ~name
        
@@ -135,16 +140,23 @@
             (session-key-checker-form name))
          ~(when validation
             (validation-form name validation))
-         
-         (response->content
-           (make-facebook-request
-             
-             ;; Build up a map from the required arguments, other arguments,
-             ;; and optional (keyword) arguments.
-             ~(optional-args->assoc-form
-                (assoc
-                  (merge (args->map required)
-                         other-map)
-                  :method method
-                  :format "JSON")
-                optional)))))))
+        
+         (let [request-map#
+               ;; Build up a map from the required arguments, other arguments,
+               ;; and optional (keyword) arguments.
+               ~(optional-args->assoc-form
+                  (assoc
+                    (merge (args->map required)
+                           other-map)
+                    :method method
+                    :format "JSON")
+                      optional)
+
+               ~output-var
+               (response->content
+                 (make-facebook-request
+                   request-map#))]
+           
+           ~(if response
+              (list response output-var)
+              output-var))))))
