@@ -56,6 +56,7 @@
       <arg value="com.twinql.clojure.facebook.sessions"/>
       <arg value="com.twinql.clojure.facebook.api"/>
       <arg value="com.twinql.clojure.facebook.sessionless"/>
+      <arg value="com.twinql.clojure.facebook.session-optional"/>
       <arg value="com.twinql.clojure.facebook.session-required"/>
       <arg value="com.twinql.clojure.facebook.handlers"/>
       <arg value="com.twinql.clojure.facebook"/>

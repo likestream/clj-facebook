@@ -104,6 +104,7 @@ deployed at http://apps.facebook.com/cljtest/.
 * `auth.getSession`
 * `auth.revokeAuthorization`
 * `auth.revokeExtendedPermission`
+* `profile.getInfo`
 
 
 ### Session required ###
@@ -149,7 +150,6 @@ deployed at http://apps.facebook.com/cljtest/.
 * `permissions.checkGrantedApiAccess`
 * `permissions.grantApiAccess`
 * `permissions.revokeApiAccess`
-* `profile.getInfo`
 * `profile.getInfoOptions`
 * `profile.setInfo`
 * `profile.setInfoOptions`
