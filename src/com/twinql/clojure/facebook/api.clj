@@ -34,23 +34,25 @@
   ;; Can't just use the multiple value version of assoc: we don't want
   ;; to associate if the value is nil.
   ;; At least we can use transients to make this a little faster.
-  (list 'persistent!
-        (loop [arg (first args)
-               res (rest args)
-               in  (list 'transient input)]
-          (if arg
-            (let [[var key val-trans] arg
-                  g (gensym)]
-              (recur (first res)
-                     (rest res)
-                     `(let [~g ~in]
-                        (if (nil? ~var)
-                          ~g
-                        (assoc! ~g ~key
-                                ~(if val-trans
-                                   (list val-trans var)
-                                   var))))))
-            in))))
+  (if args
+    (list 'persistent!
+          (loop [arg (first args)
+                 res (rest args)
+                 in  (list 'transient input)]
+            (if arg
+              (let [[var key val-trans] arg
+                    g (gensym)]
+                (recur (first res)
+                       (rest res)
+                       `(let [~g ~in]
+                          (if (nil? ~var)
+                            ~g
+                          (assoc! ~g ~key
+                                  ~(if val-trans
+                                     (list val-trans var)
+                                     var))))))
+              in)))
+    input))
 
 (defn- session-key-checker-form [name]
   `(unless *session-key*
