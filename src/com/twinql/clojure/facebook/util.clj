@@ -19,6 +19,13 @@
 (defn as-bool-param [x]
   (if x "true" "false"))
 
+(defn facebook-json-response->bool [x]
+  (get {false false
+        0     false
+        true  true
+        1     true}
+       x x))
+
 (defn time->unix [x]
   (cond
     (number? x)
