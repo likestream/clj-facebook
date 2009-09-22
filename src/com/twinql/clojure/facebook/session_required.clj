@@ -109,7 +109,7 @@
    more fine-grained control by using those two FQL tables in conjunction with
    the fql.multiquery API call."
    :optional [[start-time :start_time time->unix]
-              [include-read :include_read as-bool]]]
+              [include-read :include_read as-bool-param]]]
   
   ;; Returns true or false.
   [notifications-mark-read "notifications.markRead"
