@@ -4,10 +4,10 @@
 ;; Convenience var for storing the current session.
 (defonce *session* nil)
 
-;; Bind this to your API key.
+;; Bind this to your API key. Use the macros below!
 (defonce *api-key* nil)
 
-;; Bind this to your secret key.
+;; Bind this to your secret key. Use the macros below!
 (defonce *secret* nil)
 
 ;; Bind this to the user's session (from params, probably).

@@ -5,12 +5,7 @@
   (:refer-clojure)
   (:require [org.danlarkin.json :as json])
   (:use com.twinql.clojure.facebook.util)
-  (:use com.twinql.clojure.facebook.api)
-  
-  ;(:require com.twinql.clojure.facebook.errors)
-  ;(:require com.twinql.clojure.facebook.request)
-  ;(:require com.twinql.clojure.facebook.sessions)
-  )
+  (:use com.twinql.clojure.facebook.api))
 
 (def-fb-api-call
   admin-ban-users "admin.banUsers"

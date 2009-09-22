@@ -10,15 +10,17 @@
      [com.twinql.clojure.http :as http]
      [org.danlarkin.json :as json]))
 
-(def *facebook-rest-api* (new URI "http://api.facebook.com/restserver.php"))
-(def *facebook-login* (new URI "http://www.facebook.com/login.php"))
+(def *facebook-rest-api*  (new URI "http://api.facebook.com/restserver.php"))
+(def *facebook-login*     (new URI "http://www.facebook.com/login.php"))
 (def *facebook-authorize* (new URI "http://www.facebook.com/authorize.php"))
 
+;; I'd love to roll this into the HTTP library, but I don't want to impose
+;; a dependency on the JSON library...
 (defmethod http/entity-as :json [entity as]
   (json/decode-from-reader (http/entity-as entity :reader)))
 
 (defn make-facebook-request 
-  "args should include your method."
+  "`args` should include your method."
   ([args]
    (make-facebook-request *session*
                           *secret*
@@ -30,7 +32,8 @@
   
   ([session secret args]
    (when (nil? session)
-     (throw (new Exception "No session. Use with-new-session to establish one.")))
+     (throw
+       (new Exception "No session. Use with-new-session to establish one.")))
    (http/post *facebook-rest-api*
               :query (add-signature
                        (assoc-when

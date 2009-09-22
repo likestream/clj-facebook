@@ -1,14 +1,21 @@
+;;; Tools for defining new Facebook API calls.
+;;; Definitions themselves are in sessionless.clj, session_required.clj.
+
 (ns com.twinql.clojure.facebook.api
   (:refer-clojure)
+  
   (:require [org.danlarkin.json :as json])
-  ;; Even sessionless requests still need
-  ;; version, api_key, etc...
+  
   (:use com.twinql.clojure.facebook.util)
   (:use com.twinql.clojure.facebook.errors)
   (:use com.twinql.clojure.facebook.request)
   (:use com.twinql.clojure.facebook.sessions))
 
-(defn- args->arglist [args]
+(defn- args->arglist
+  "`args` is like
+    [[foo :foo transformer]]
+    We want a list of just the Clojure args."
+  [args]
   (map first args))
 
 (defn- args->map [args]
@@ -49,45 +56,89 @@
   `(unless *session-key*
      (throw (new Exception (str "No session key provided to " ~name)))))
 
-(defn- v-form [v]
+(defn- v-form [name v]
   `(or ~v
        (throw 
-         (new Exception (str "Validation failed: " ~v)))))
+         (new Exception (str "Validation failed in " ~name ": " ~v)))))
 
 (defn- validation-form [name validation]
   `(and 
-     ~@(map v-form validation)))
+     ~@(map (partial v-form name) validation)))
 
-;; Rough edge: these generated functions currently have a fixed
-;; arglist, so no optionals, no keyword parameters. Etc.
-;; Also, this looks damn ugly. Sorry.
-(defmacro def-fb-api-call [name method & opt]
+;; This looks damn ugly. Sorry.
+(defmacro def-fb-api-call
+  "Define a Facebook API call function.
+   Required arguments: name, method.  E.g.,
+  
+     foo-bar-baz, \"foo.barBaz\".
+  
+   Optional arguments are provided as keywords:
+  
+      :docstring:  self-explanatory.
+      :required:   a sequence of required arguments. (See below.)
+      :optional:   similarly for optional arguments, which are treated as
+                   keyword arguments.
+      :other-args: if you need direct control over a portion of the argument
+                   list, do this. It's spliced directly in.
+      :other-map:  a map that contributes to the final request map. It has
+                   access to the arguments in `other-args`.
+      :validation: a sequence of forms. These are inlined directly as code,
+                   with a descriptive exception, so make them pretty.
+      :session-required?: if true, code is inserted to check for a session key.
+  
+   Arguments (required, optional) should be provided as sequences:
+   
+      [[arg1 :arg_kwd transformer]
+       [arg2 :no_transformer]]
+  
+   The first value is used in the Clojure function; the second in the Facebook
+   request map; the third is used to transform the value before sending it."
+  
+  [name method & opt]
   (let [{:keys [docstring required optional other-args other-map
                 validation
                 session-required?]}
         (apply hash-map opt)
         args-var (gensym "args")]
-    `(defn ~name ~(str (or docstring (str name ": " required))
-                       (if optional
-                         (apply str "\nKeyword arguments:\n\t"
-                                (interpose "\n\t" (args->arglist optional)))
-                         ""))
-       ~(vec (concat (args->arglist required)
-                     other-args
-                     ;; Could do something fancy to define multiple arity
-                     ;; versions with real optional arguments... or take the keyword
-                     ;; approach...
-                     (when optional
-                       `(& ~args-var))))
+    
+    `(defn ~name
+       
+       ;; Docstring.
+       ~(str (or docstring (str name ": " required))
+             ;; Generate a docstring including keyword arguments.
+             (if optional
+               (apply str "\nKeyword arguments:\n\t"
+                      (interpose "\n\t" (args->arglist optional)))
+               ""))
+       
+       ;; Arglist.
+       ~(vec
+          (concat
+            (args->arglist required)
+            other-args
+            ;; Could do something fancy to define multiple arity
+            ;; versions with real optional arguments... instead, take the keyword
+            ;; approach...
+            (when optional
+              `(& ~args-var))))
+       
+       ;; Destructure keyword arguments.
        (let [~@(when optional
                  (list {:keys (args->arglist optional)}
                        args-var))]
+         
+         ;; Include validation forms. The nils if they don't exist
+         ;; can be safely ignored.
          ~(when session-required?
             (session-key-checker-form name))
          ~(when validation
             (validation-form name validation))
+         
          (response->content
            (make-facebook-request
+             
+             ;; Build up a map from the required arguments, other arguments,
+             ;; and optional (keyword) arguments.
              ~(optional-args->assoc-form
                 (assoc
                   (merge (args->map required)

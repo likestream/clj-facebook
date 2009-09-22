@@ -67,7 +67,9 @@
 
 ;; TODO: it would be nice to augment this with a real Compojure middleware 
 ;; function, so developers can wrap their handlers in a 
-;; "with-signature-verification" form.
+;; "with-signature-verification" form. Then again, they're almost always
+;; going to be using the Facebook callback params, which will include
+;; verification.
 (defn verify-sig
   "Returns the parameters on success; throws an exception on failure."
   [params secret]
