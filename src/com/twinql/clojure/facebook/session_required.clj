@@ -119,4 +119,21 @@
    FQL table.
    Applications must pass a valid session key, and can only mark the
    notifications of the current session user."
-   :required [[notification-ids :notification_ids seq->comma-separated]]])
+   :response facebook-json-response->bool
+   :required [[notification-ids :notification_ids seq->comma-separated]]]
+  
+  [users-get-logged-in-user "users.getLoggedInUser"
+   :docstring 
+   "Gets the user ID (uid) associated with the current session. This value
+   should be stored for the duration of the session, to avoid unnecessary
+   subsequent calls to this method."]
+  
+  [users-is-verified "users.isVerified"
+   :docstring
+   "Determines whether Facebook considers the current user to be verified or
+   not. We use verification with certain features such as granting verified
+   users increased limits for the length and file size of videos they can upload
+   directly on Facebook or through your applications.
+   Important: You may *never* disclose a user's verified state anywhere in your
+   application or on Facebook, whether to that user or the user's friends."
+   :response facebook-json-response->bool])

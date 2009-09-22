@@ -70,9 +70,9 @@
   admin-get-banned-users "admin.getBannedUsers"
   :docstring
   "Returns a list of users who were banned by an application using
-  admin.banUsers.
-  If uids is nil, it is omitted from the request."
-  :optional [[uids :uids json/encode-to-str]])
+  admin.banUsers."
+  :optional [[uids :uids json/encode-to-str]]
+  :validation [(sequential? uids)])
 
 (def-fb-api-call
   application-get-public-info "application.getPublicInfo"
@@ -84,7 +84,7 @@
   :docstring "Returns the session key bound to an auth_token, as returned by auth.createToken or in the callback_url. Should be called immediately after the user has logged in.
   For Facebook canvas pages, the session key is passed to your page using POST with the fb_sig_session_key parameter."
   :required [[auth_token :auth_token]]
-  :optional [[generate_session_secret :generate-session-secret as-bool]])
+  :optional [[generate_session_secret :generate-session-secret as-bool-param]])
 
 (def-fb-api-call
   auth-revoke-authorization "auth.revokeAuthorization"
@@ -97,6 +97,82 @@
   :required [[perm :perm id->str]]
   :optional [[uid :uid]])
 
+(def-fb-api-call
+  profile-get-info "profile.getInfoOptions"
+  :docstring
+  "Returns the set of typeahead options available for the specified
+  field in an application info section. You specify the typeahead
+  options with profile.setInfoOptions."
+  :required [[field :field]])
+
+(def-fb-api-call
+  profile-set-info "profile.setInfo"
+  :docstring
+  "Configures an application info section that the specified user can install
+  on the Info tab of her profile.
+  You prompt the user to install the section using the fb:add-section-button
+  tag (set the section parameter to info). The button remains on your canvas
+  page until the user clicks it to add the section."
+  :required [[title :title]
+             [type :type]
+             [info-fields :info_fields json/encode-to-str]
+             [uid :uid]]
+  :validation [({1 5} type)
+               (sequential? info-fields)])
+
+(def-fb-api-call
+  profile-set-info-options "profile.setInfoOptions"
+  :docstring
+  "Specifies the available items for a field in an application info section.
+  These options populate the typeahead for a thumbnail."
+  :required [[field :field]
+             [options :options json/encode-to-str]]
+  :validation [(and (map? options)     ; Only this will encode correctly.
+                    (contains? options :label)
+                    (contains? options :link))])
+  
+(def-fb-api-call
+  users-get-standard-info "users.getStandardInfo"
+  :docstring
+  "Returns an array of user-specific information for use by the application
+  itself. Make this call on behalf of your application when you need analytic
+  information only. Don't display this information to any users. If you need to
+  display information to other users, call `users.getInfo`.
+  
+  The information you can get from this call is limited to:
+  
+    uid
+    first_name
+    last_name
+    username
+    name
+    locale
+    affiliations (regional type only)
+    profile_url
+    timezone
+    birthday
+    sex
+    current_location
+    proxied_email
+  
+  The only storable values returned from this call are the user IDs.
+  
+  This call returns nothing for any users who haven't authorized your application
+  to access their information.
+  
+  This method may not be used by desktop applications or in the context of a
+  session secret-based session."
+  
+  :required [[uids :uids seq->comma-separated]
+             [fields :fields seq->comma-separated]]
+  :validation [(sequential? fields)
+               (every? (string-set-checker
+                         #{"uid" "affiliations" "birthday" "current_location"
+                           "first_name" "last_name" "locale" "name"
+                           "profile_url" "proxied_email" "sex" "timezone"
+                           "username"})
+                       fields)])
+  
 
 (comment
   (with-new-session []

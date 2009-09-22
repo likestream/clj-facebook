@@ -105,6 +105,10 @@ deployed at http://apps.facebook.com/cljtest/.
 * `auth.revokeAuthorization`
 * `auth.revokeExtendedPermission`
 * `profile.getInfo`
+* `profile.getInfoOptions`
+* `profile.setInfo`
+* `profile.setInfoOptions`
+* `users.getStandardInfo`
 
 
 ### Session required ###
@@ -119,6 +123,8 @@ deployed at http://apps.facebook.com/cljtest/.
 * `status.get`:                         `status-get`
 * `notifications.getList`:              `notifications-get-list`
 * `notifications.markRead`:             `notifications-mark-read`
+* `users.getLoggedInUser`:              `users-get-logged-in-user`
+* `users.isVerified`:                   `users-is-verified`
 
 
 ## Not Implemented ##
@@ -150,10 +156,6 @@ deployed at http://apps.facebook.com/cljtest/.
 * `permissions.checkGrantedApiAccess`
 * `permissions.grantApiAccess`
 * `permissions.revokeApiAccess`
-* `profile.getInfoOptions`
-* `profile.setInfo`
-* `profile.setInfoOptions`
-* `users.getStandardInfo`
 
 ### Session required ###
 
@@ -173,8 +175,6 @@ deployed at http://apps.facebook.com/cljtest/.
 * `photos.getAlbums`
 * `photos.getTags`
 * `stream.get`
-* `users.getLoggedInUser`
-* `users.isVerified`
 * `video.getUploadLimits`
 * `video.upload`
 
