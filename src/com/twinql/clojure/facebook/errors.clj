@@ -7,9 +7,21 @@
 
 (def *errors*
   {  1 "Unknown; please resubmit."
+     2 "Service unavailable."
      4 "Maximum requests limit reached."
+     5 "Remote address not allowed."
    100 "Parameter missing or invalid."
-   101 "Invalid API key." })
+   101 "Invalid API key."
+   102 "Improper or expired session key. Log in again."
+   103 "Call ID not sequential."
+   104 "Incorrect signature."
+   601 "Error parsing FQL statement."
+   602 "Field does not exist."
+   603 "Table does not exist."
+   604 "Statement not indexable."
+   605 "Function does not exist."
+   606 "Wrong number of arguments to function."
+   614 "Unresolved dependency in multiquery."})
 
 ;; TODO: eventually we want a structured error format,
 ;; not a plain Exception.

@@ -104,7 +104,6 @@ deployed at http://apps.facebook.com/cljtest/.
 * `auth.getSession`
 * `auth.revokeAuthorization`
 * `auth.revokeExtendedPermission`
-* `profile.getInfo`
 * `profile.getInfoOptions`
 * `profile.setInfo`
 * `profile.setInfoOptions`
@@ -120,12 +119,19 @@ deployed at http://apps.facebook.com/cljtest/.
 * `events.rsvp`:                        `events-rsvp`
 * `feed.publishUserAction`:             `feed-publish-user-action`
 * `friends.areFriends`:                 `friends-are-friends`
+* `groups.get`:                         `groups-get`
+* `groups.getMembers`:                  `groups-get-members`
 * `status.get`:                         `status-get`
 * `notifications.getList`:              `notifications-get-list`
 * `notifications.markRead`:             `notifications-mark-read`
 * `users.getLoggedInUser`:              `users-get-logged-in-user`
 * `users.isVerified`:                   `users-is-verified`
 
+### Session optional ###
+
+* `fql.multiquery`
+* `fql.query`
+* `profile.getInfo`
 
 ## Not Implemented ##
 
@@ -161,8 +167,6 @@ deployed at http://apps.facebook.com/cljtest/.
 
 * `friends.getAppUsers`
 * `friends.getLists`
-* `groups.get`
-* `groups.getMembers`
 * `links.get`
 * `liveMessage.send`
 * `marketplace.getListings`
@@ -187,8 +191,6 @@ deployed at http://apps.facebook.com/cljtest/.
 * `events.edit`
 * `events.get`
 * `events.getMembers`
-* `fql.multiquery`
-* `fql.query`
 * `friends.get`
 * `friends.getMutualFriends`
 * `links.post`

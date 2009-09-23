@@ -121,7 +121,31 @@
    notifications of the current session user."
    :response facebook-json-response->bool
    :required [[notification-ids :notification_ids seq->comma-separated]]]
+ 
+  [groups-get "groups.get"
+   :docstring
+   "Returns all visible groups according to the filters specified. You can use
+   this method to return all groups associated with a user, or query a specific
+   set of groups by a list of GIDs.
+   
+   If both the uid and gids parameters are provided, the method returns all
+   groups in the set of gids with which the user is associated. If the gids
+   parameter is omitted, the method returns all groups associated with the
+   provided user.
+   
+   However, if the uid parameter is omitted, the method returns all groups
+   associated with the provided gids, regardless of any user relationship.
+   
+   If both parameters are omitted, the method returns all groups of the session
+   user."
+   :optional [[gids :gids seq->comma-separated]
+              [uid :uid]]]
   
+  [groups-get-members "groups.getMembers"
+   :docstring
+   "Returns membership list data associated with a group."
+   :required [[gid :gid]]]
+              
   [users-get-logged-in-user "users.getLoggedInUser"
    :docstring 
    "Gets the user ID (uid) associated with the current session. This value
