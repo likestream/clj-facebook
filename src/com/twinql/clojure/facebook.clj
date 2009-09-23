@@ -8,4 +8,5 @@
   'com.twinql.clojure.facebook.sessions
   'com.twinql.clojure.facebook.sessionless
   'com.twinql.clojure.facebook.session-required
+  'com.twinql.clojure.facebook.session-optional
   'com.twinql.clojure.facebook.handlers)
