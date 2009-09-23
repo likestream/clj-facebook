@@ -40,6 +40,23 @@
   query within the same call, specify its name in the FROM clause, preceded by
   #."
   :required [[queries :queries json/encode-to-str]]
+  :optional [[session-key :session_key]]
   :validation [(map? queries)
                (every? string? (vals queries))
                (every? query-name? (keys queries))])
+
+(def-fb-api-call
+  friends-get "friends.get"
+  :docstring ""
+  :optional [[session-key :session_key]
+             [flid :flid]
+             [uid :uid]])
+
+(def-fb-api-call
+  friends-get-mutual-friends "friends.getMutualFriends"
+  :docstring ""
+  :optional [[session-key :session_key]
+             [source-uid :source_uid]]
+  :required [[target-uid :target_uid]]
+  :validation [(or source-uid
+                   session-key)])
