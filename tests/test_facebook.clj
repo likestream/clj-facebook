@@ -5,7 +5,8 @@
 ;; Shamefully stolen from the Clojure tests.
 
 (def test-namespaces
-  ['uk.co.holygoat.util.md5-test])
+     ['uk.co.holygoat.util.md5-test
+      'com.twinql.clojure.facebook.sessions-test])
 
 (defn run []
   (println "Loading tests...")
