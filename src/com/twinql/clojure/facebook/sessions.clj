@@ -1,5 +1,6 @@
 (ns com.twinql.clojure.facebook.sessions
-  (:refer-clojure))
+  (:refer-clojure)
+  (:use com.twinql.clojure.facebook.sig))
 
 ;; Convenience var for storing the current session.
 (defonce *session* nil)
@@ -62,3 +63,15 @@
   `(binding [*api-key* ~api-key
              *secret* ~secret-key]
      ~@body))
+
+(defn has-valid-sig?
+  "True if the sig is specified and valid, nil otherwise."
+  ([params] (has-valid-sig? params *secret*))
+  ([params secret]
+      (when-not secret
+        (throw (new Exception "No secret key.")))
+      (when-let [sig (:fb_sig params)]
+        (let [computed (generate-signature
+                        (params-for-signature params)
+                        secret)]
+          (= sig computed)))))

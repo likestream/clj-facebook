@@ -7,7 +7,6 @@
 (ns com.twinql.clojure.facebook.handlers
   (:refer-clojure)
   (:use com.twinql.clojure.facebook.util)
-  (:use com.twinql.clojure.facebook.sig)
   (:use com.twinql.clojure.facebook.sessions))
   
 (defn facebook-parameters->session-key [params]
@@ -58,16 +57,32 @@
     (merge-with #(%1 %2) fs params)
     (keys params)))
   
-(defn- fb-params [params]
+(defn fb-params [params]
   (transform-map
     (merge facebook-request-parameters
            facebook-post-auth-callback-parameters
            facebook-parameters)
     params))
-  
-(defn process-params
-  "Transforms request parameters and verifies the signature.
-  Raises an exception on failure."
-  [params]
-  (fb-params
-    (verify-sig params *secret*)))
+
+(defn verify-signature
+  "Middleware that converts facebook params to useful types, and
+  adds :facebook-signature-valid to the request if sig is valid."
+  [request]
+  (let [valid? (has-valid-sig? (request :params))
+        request (update-in request [:params] fb-params)]
+    (if valid?
+      (assoc request :facebook_signature_valid true)
+      request)))
+
+(defn with-signature-verification
+  "Middleware that applies verify-signature to a request."
+  [handler]
+  (fn [request] (handler (verify-signature request))))
+
+(defn facebook-user-id 
+  "Extracts the facebook user id from a request, *if* the request has a valid
+  id. Checks the signature. Must be called after request has been preprocessed,
+  e.g. inside a with-signature-verification form."
+  [request]
+  (and (request :facebook_signature_valid)
+       (get-in request [:params :fb_sig_user])))

@@ -65,38 +65,3 @@
 (defn params-for-signature [params]
   (rename-keys-with params facebook-sig-param-name))
 
-;; TODO: it would be nice to augment this with a real Compojure middleware 
-;; function, so developers can wrap their handlers in a 
-;; "with-signature-verification" form. Then again, they're almost always
-;; going to be using the Facebook callback params, which will include
-;; verification.
-(defn verify-sig
-  "Returns the parameters on success; throws an exception on failure."
-  [params secret]
-  (unless secret
-    (throw (new Exception "No secret key provided to verify-sig.")))
-  (let [sig (:fb_sig params)
-        computed (generate-signature
-                   (params-for-signature params)
-                    secret)]
-    
-    (unless sig
-      (throw (new Exception "No signature to compare!")))
-            
-    (if (= sig computed)
-      params
-      (throw (new Exception
-                  (str "Signature does not match: computed = " computed
-                       ", should be " sig "."))))))
-
-(defn has-valid-sig?
-  "True if the sig is specified and valid, nil otherwise."
-  [params secret]
-  (unless secret
-    (throw (new Exception "No secret key provided to verify-sig.")))
-  (when-let [sig (:fb_sig params)]
-    (let [computed (generate-signature
-            (params-for-signature params)
-            secret)]
-      (or (= sig computed)
-          (log :warn (str "Signatures do not match [" computed "]" params))))))

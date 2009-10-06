@@ -2,10 +2,6 @@
   (:refer-clojure)
   (:require [org.danlarkin.json :as json]))
 
-(defmacro unless [x & body]
-  `(when (not ~x)
-     ~@body))
-
 (defn #^String as-str
   "Because contrib's isn't typed correctly."
   [x]
