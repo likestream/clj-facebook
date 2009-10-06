@@ -1,6 +1,6 @@
 (ns com.twinql.clojure.facebook.sig
   (:refer-clojure)
-  (:use com.twinql.clojure.facebook.util)
+  (:use com.twinql.clojure.facebook.util clojure.contrib.logging)
   (:use uk.co.holygoat.util.md5))
 
 ;;; 
@@ -62,7 +62,7 @@
     (when (zero? (.indexOf n "fb_sig_"))
       (.substring n 7))))
 
-(defn- params-for-signature [params]
+(defn params-for-signature [params]
   (rename-keys-with params facebook-sig-param-name))
 
 ;; TODO: it would be nice to augment this with a real Compojure middleware 
@@ -88,3 +88,15 @@
       (throw (new Exception
                   (str "Signature does not match: computed = " computed
                        ", should be " sig "."))))))
+
+(defn has-valid-sig?
+  "True if the sig is specified and valid, nil otherwise."
+  [params secret]
+  (unless secret
+    (throw (new Exception "No secret key provided to verify-sig.")))
+  (when-let [sig (:fb_sig params)]
+    (let [computed (generate-signature
+            (params-for-signature params)
+            secret)]
+      (or (= sig computed)
+          (log :warn (str "Signatures do not match [" computed "]" params))))))
