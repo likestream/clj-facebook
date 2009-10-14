@@ -8,6 +8,7 @@
      ['uk.co.holygoat.util.md5-test
       'com.twinql.clojure.facebook.sessions-test
       'com.twinql.clojure.facebook.sig-test
+      'com.twinql.clojure.facebook.compojure-test
       'com.twinql.clojure.facebook.handlers-test])
 
 (defn run []
