@@ -70,6 +70,15 @@
       <classpath>
         <path location="${tests}"/>
         <path refid="libs.path"/>
+        
+        <!-- The test suite needs Compojure. -->
+        <path location="lib/compojure.jar"/>
+        <path location="lib/commons-fileupload-1.2.1.jar"/>
+        <path location="lib/servlet-api-2.5-20081211.jar"/>
+        <!-- We use Grizzly. Quieter and better than Jetty. -->
+        <path location="lib/grizzly-http-servlet-1.9.10.jar"/>
+        <path location="lib/grizzly-http-webserver-1.9.10.jar"/>
+        
       </classpath>
       <arg value="-e"/>
       <arg value="(require 'test-facebook) (test-facebook/run-ant)"/>
