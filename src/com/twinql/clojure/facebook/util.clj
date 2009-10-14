@@ -115,3 +115,7 @@
 (defn query-name? [x]
   (and (string? x)
        (re-find #"^[_0-9a-zA-Z]+$" x)))
+  
+(defmacro unless [x & body]
+  `(when (not ~x)
+     ~@body))
