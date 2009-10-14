@@ -59,6 +59,7 @@
   
 (defn fb-params [params]
   (transform-map
+    ;; TODO: Would be nice to do this before runtime, no?
     (merge facebook-request-parameters
            facebook-post-auth-callback-parameters
            facebook-parameters)
