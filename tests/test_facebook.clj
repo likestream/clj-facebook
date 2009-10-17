@@ -6,6 +6,7 @@
 
 (def test-namespaces
      ['uk.co.holygoat.util.md5-test
+      'com.twinql.clojure.facebook.api-test
       'com.twinql.clojure.facebook.sessions-test
       'com.twinql.clojure.facebook.sig-test
       'com.twinql.clojure.facebook.compojure-test

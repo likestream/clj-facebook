@@ -55,7 +55,7 @@
     input))
 
 (defn- session-key-checker-form [name]
-  `(unless *session-key*
+  `(when-not *session-key*
      (throw (new Exception (str "No session key provided to " ~name)))))
 
 (defn- v-form [name v]
@@ -66,6 +66,11 @@
 (defn- validation-form [name validation]
   `(and 
      ~@(map (partial v-form name) validation)))
+
+(defn optional-args-binding-form [optional args-var]
+  (when optional
+    (list [{:keys (args->arglist optional)}]
+          args-var)))
 
 ;; This looks damn ugly. Sorry.
 (defmacro def-fb-api-call
@@ -130,9 +135,7 @@
               `(& ~args-var))))
        
        ;; Destructure keyword arguments.
-       (let [~@(when optional
-                 (list {:keys (args->arglist optional)}
-                       args-var))]
+       (let [~@(optional-args-binding-form optional args-var)]
          
          ;; Include validation forms. The nils if they don't exist
          ;; can be safely ignored.
