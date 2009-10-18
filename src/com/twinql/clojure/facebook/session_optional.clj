@@ -53,6 +53,24 @@
              [uid :uid]])
 
 (def-fb-api-call
+  users-get-info "users.getInfo"
+  :docstring
+  "Returns a wide array of user-specific information for each user
+  identifier passed, limited by the view of the current user. The
+  current user is determined from the session_key parameter. The only
+  storable values returned from this call are those under the
+  affiliations element, the notes_count value, the proxied_email
+  address, and the contents of the profile_update_time element.
+
+  Use this call to get user data that you intend to display to other
+  users (of your application, for example). If you need some basic
+  information about a user for analytics purposes, call
+  users.getStandardInfo instead."
+  :required [[uids :uids seq->comma-separated]
+             [fields :fields seq->comma-separated]]
+  :optional [[session-key :session_key]])
+
+(def-fb-api-call
   friends-get-mutual-friends "friends.getMutualFriends"
   :docstring ""
   :optional [[session-key :session_key]
