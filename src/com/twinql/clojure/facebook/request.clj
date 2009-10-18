@@ -33,7 +33,7 @@
   ([session secret args]
    (when (nil? session)
      (throw
-       (new Exception "No session. Use with-new-session to establish one.")))
+       (new Exception "No session. Use with-new-fb-session to establish one.")))
    (http/post *facebook-rest-api*
               :query (add-signature
                        (assoc-when
