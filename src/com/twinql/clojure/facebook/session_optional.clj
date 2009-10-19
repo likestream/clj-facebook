@@ -78,3 +78,16 @@
   :required [[target-uid :target_uid]]
   :validation [(or source-uid
                    session-key)])
+
+(def-fb-api-call
+  send-notification "notifications.send"
+  :docstring "Sends a notification to a set of users. Notifications
+  are items sent by an application to a user's notifications page in
+  response to some sort of user activity within an application. You
+  can also send messages to the logged-in user's
+  notifications (located on the right hand side of the chat bar), as
+  well as on their notifications page."
+  :required [[to_ids :to_ids seq->comma-separated]
+             [notification :notification]]
+  :optional [[session-key :session-key]
+             [type :type]])
