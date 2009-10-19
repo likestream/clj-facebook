@@ -68,9 +68,10 @@
      ~@(map (partial v-form name) validation)))
 
 (defn optional-args-binding-form [optional args-var]
-  (when optional
-    (list [{:keys (args->arglist optional)}]
-          args-var)))
+  (when (and optional
+             (not (empty? optional)))
+    (list {:keys (args->arglist optional)}
+           `(apply hash-map ~args-var))))
 
 ;; This looks damn ugly. Sorry.
 (defmacro def-fb-api-call
