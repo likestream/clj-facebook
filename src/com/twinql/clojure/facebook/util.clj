@@ -105,6 +105,22 @@
                  [new-key v])))
            m)))
 
+(defn remove-values-if
+  "Remove entries from `ms` where the value matches `t`. Return a single map."
+  [t & ms]
+  (let [s (apply concat ms)]
+    (loop [out (transient {})
+           f (first s)
+           r (rest s)]
+      (if-not f
+        (persistent! out)
+        (recur (if (t (second f))
+                 out
+                 (assoc! out (first f)
+                         (second f)))
+               (first r)
+               (rest r))))))
+
 (defn string-set-checker
   "Returns a predicate that checks for its argument in the set.
   Works on strings, symbols, or keywords."
