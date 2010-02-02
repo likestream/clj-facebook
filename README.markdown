@@ -131,6 +131,8 @@ deployed at http://apps.facebook.com/cljtest/.
 
 * `fql.multiquery`
 * `fql.query`
+* `friends.get`
+* `friends.getMutualFriends`
 * `profile.getInfo`
 
 ## Not Implemented ##
@@ -191,8 +193,6 @@ deployed at http://apps.facebook.com/cljtest/.
 * `events.edit`
 * `events.get`
 * `events.getMembers`
-* `friends.get`
-* `friends.getMutualFriends`
 * `links.post`
 * `marketplace.createListing`
 * `marketplace.removeListing`
