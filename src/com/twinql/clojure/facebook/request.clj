@@ -13,6 +13,8 @@
 (def *facebook-rest-api*  (new URI "http://api.facebook.com/restserver.php"))
 (def *facebook-login*     (new URI "http://www.facebook.com/login.php"))
 (def *facebook-authorize* (new URI "http://www.facebook.com/authorize.php"))
+(def *facebook-http-params*
+     (http/map->params {:tcp-nodelay true}))
 
 ;; I'd love to roll this into the HTTP library, but I don't want to impose
 ;; a dependency on the JSON library...
@@ -31,16 +33,21 @@
                           args))
   
   ([session secret args]
-   (when (nil? session)
-     (throw
-       (new Exception "No session. Use with-new-fb-session to establish one.")))
-   (http/post *facebook-rest-api*
-              :query (add-signature
-                       (assoc-when
-                         (merge session args)
-                         :session_key *session-key*)
-                       secret)
-              :as :json)))
+     (when-not (string? secret)
+       (throw
+        (new Exception "Non-string secret key is not suitable for make-facebook-request.")))
+     (when (nil? session)
+       (throw
+        (new Exception "No session. Use with-new-fb-session to establish one.")))
+     (let [query (add-signature
+                  (assoc-when
+                   (merge session args)
+                   :session_key *session-key*)
+                  secret)]
+       (http/post *facebook-rest-api*
+                  :query query
+                  :as :json
+                  :parameters *facebook-http-params*))))
 
 (defn login-url
   "Produce a URI to redirect a user to the Facebook login page to authorize

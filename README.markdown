@@ -63,10 +63,10 @@ key to be passed in to `new-session` or the argument list of
 
     ;; ... or permanently set the var root:
     (alter-var-root (var *api-key*)
-      (fn [x] "my-api-key"))
+      (constantly "my-api-key"))
 
     (alter-var-root (var *secret*)
-      (fn [x] "my-secret-key"))
+      (constantly "my-secret-key"))
 
 The reason for the discrepancy is that the API key is used once to construct
 the session (stored in `*session*`: you must increment it after each request by
