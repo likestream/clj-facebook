@@ -1,4 +1,4 @@
-(defproject com.twinql.clojure/facebook "1.0.1-master-SNAPSHOT"
+(defproject com.twinql.clojure/facebook "1.0.2-master-SNAPSHOT"
  :description "Clojure Facebook client library using clj-apache-http."
  :dependencies [[org.clojure/clojure "1.2.0-master-SNAPSHOT"]
                 [org.clojure/clojure-contrib "1.2.0-master-SNAPSHOT"]
