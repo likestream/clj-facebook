@@ -18,8 +18,8 @@
 
 ;; I'd love to roll this into the HTTP library, but I don't want to impose
 ;; a dependency on the JSON library...
-(defmethod http/entity-as :json [entity as]
-  (json/decode-from-reader (http/entity-as entity :reader)))
+(defmethod http/entity-as :json [entity as status]
+  (json/decode-from-reader (http/entity-as entity :reader status)))
 
 (defn make-facebook-request 
   "`args` should include your method."
