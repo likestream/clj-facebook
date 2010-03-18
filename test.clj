@@ -8,18 +8,18 @@
 ;;; 
 ;;; Note that this test page does no escaping!
 ;;;
-;;; Current Facebook app settings:
+;;; App settings should be something like:
 ;;; 
-;;;  API Key                             323ba847e1fc870fd7ee26e5d23ae100
-;;;  Application Secret                  037e6278b8bf2c317b5c5a789c736f2d
-;;;  Application ID                      103381584023
-;;;  Canvas Callback URL                 http://www01.siptone.net/test/canvas/
-;;;  Canvas URL                          http://apps.facebook.com/cljtest/
+;;;  API Key                             aaaaaaaaaafc870fd7ee26e5d23ae100
+;;;  Application Secret                  aaaaaaaaaabf2c317b5c5a789c736f2d
+;;;  Application ID                      103381500000
+;;;  Canvas Callback URL                 http://example.net/test/canvas/
+;;;  Canvas URL                          http://apps.facebook.com/appname/
 ;;;  FBML/iframe                         iframe
 ;;;  Application Type                    Website
-;;;  Post-Authorize Redirect URL         http://apps.facebook.com/cljtest/needslogin
-;;;  Post-Remove URL                     http://www01.siptone.net/test/postremove
-;;;  Post-Authorize URL                  http://www01.siptone.net/test/postauth
+;;;  Post-Authorize Redirect URL         http://apps.facebook.com/appname/needslogin
+;;;  Post-Remove URL                     http://example.net/test/postremove
+;;;  Post-Authorize URL                  http://example.net/test/postauth
 ;;; 
 
 (ns test
@@ -37,9 +37,9 @@
 ;; Bind the session information for this application.
 ;; Use this macro around any code you want to make API
 ;; calls.
-(defmacro with-cljtest [& body]
-  `(fb/with-fb-keys ["323ba847e1fc870fd7ee26e5d23ae100"
-                     "037e6278b8bf2c317b5c5a789c736f2d"]
+(defmacro with-appname [& body]
+  `(fb/with-fb-keys ["aaaaaaaaaafc870fd7ee26e5d23ae100"
+                     "aaaaaaaaaabf2c317b5c5a789c736f2d"]
      ~@body))
 
 ;; Common processing of params.
@@ -47,7 +47,7 @@
 ;; It might be useful to redirect people to the app's canvas page when
 ;; signature verification fails.
 (defmacro with-fb-params [m & body]
-  `(with-cljtest
+  `(with-appname
      (let [~'params (fb/process-params ~'params)
            
            ;; Bind a predetermined set of labels to functions of the processed
@@ -199,6 +199,5 @@
                {}))))
 
 ;; Run this behind pound, URL prefix /test/.
-;; See http://www01.siptone.net/test/
 (run-server {:port 8088}
   "/*" (servlet test-app))
