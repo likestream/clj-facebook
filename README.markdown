@@ -90,6 +90,10 @@ These are demonstrated by the test application in `test.clj`.
 
 ## Implemented API ##
 
+Each Facebook API call translates into a Clojure function. See the translations below.
+
+Use `doc` to see the arguments and description.
+
 ### Sessionless ###
 
 * `admin.banUsers`:           `admin-ban-users`
