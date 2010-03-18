@@ -229,3 +229,9 @@ Use `doc` to see the arguments and description.
 * `users.hasAppPermission`
 * `users.isAppUser`
 * `users.setStatus`
+
+## Authors ##
+
+Development funded by LikeStream LLC (Don Jackson and Shirish Andhare), see http://www.likestream.org/opensource.
+
+Developed by Richard Newman. Contributions from Relevance Inc.
