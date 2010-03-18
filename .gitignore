@@ -1,4 +1,7 @@
 classes/
+facebook.jar
+pom.xml
+lib/
 clj-facebook.jar
 scratch.clj
 *~
