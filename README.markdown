@@ -2,12 +2,16 @@
 
 A client API for Facebook.
 
+# Building #
+
+Use Leiningen (or ant).
+
 # What is supported? #
 
 ## Client ##
 
 Currently, requesting tokens, maintaining and incrementing session properties,
-and performing sessionless requests. For example:
+performing requests, and cleaning up Facebook responses. For example:
 
 
     (use 'com.twinql.clojure.facebook.util)        ; For (last-day).
@@ -28,7 +32,8 @@ Bad requests will throw an exception (currently with a descriptive message but
 no useful programmatic attributes).
 
 Facebook API calls have required arguments (which appear directly in the
-arglist), and optional arguments (which are encoded as keyword arguments). These are included in the docstring for each function. For example:
+arglist), and optional arguments (which are encoded as keyword arguments).
+These are included in the docstring for each function. For example:
 
     user=> (doc feed-publish-user-action)    
     -------------------------
