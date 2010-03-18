@@ -1,6 +1,6 @@
 # What is it? #
 
-A client API for Facebook.
+A client API for Facebook, and some sparse documentation.
 
 # Building #
 
@@ -86,7 +86,7 @@ On the server side, some utilities are provided to aid in the development of
 (primarily iframe) applications: processing known Facebook request parameters;
 verifying signatures; generating Facebook login URLs, etc.
 
-These are demonstrated by the test application in `test.clj`, currently
+These are demonstrated by the test application in `test.clj`.
 deployed at http://apps.facebook.com/cljtest/.
 
 ## Implemented API ##
