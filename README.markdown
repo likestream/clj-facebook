@@ -87,7 +87,6 @@ On the server side, some utilities are provided to aid in the development of
 verifying signatures; generating Facebook login URLs, etc.
 
 These are demonstrated by the test application in `test.clj`.
-deployed at http://apps.facebook.com/cljtest/.
 
 ## Implemented API ##
 
