@@ -55,7 +55,8 @@
     input))
 
 (defn- session-key-checker-form [name]
-  `(when-not *session-key*
+  `(when-not (or *session-key*
+                 ~'session-key)
      (throw (new Exception (str "No session key provided to " ~name)))))
 
 (defn- v-form [name v]
@@ -112,12 +113,23 @@
                 response]}
         (apply hash-map opt)
         args-var (gensym "args")
-        output-var (gensym "output")]
+        output-var (gensym "output")
+        
+        ;; Make sure session-key is an argument to a session-required function.
+        required-args (if session-required?
+                        (if (or (contains? (set (map first required))
+                                           'session-key)
+                                (contains? (set (map first optional))
+                                           'session-key))
+                          required
+                          (vec (cons ['session-key :session_key] required)))
+                        required)]
+        
     
     `(defn ~name
        
        ;; Docstring.
-       ~(str (or docstring (str name ": " required))
+       ~(str (or docstring (str name ": " required-args))
              ;; Generate a docstring including keyword arguments.
              (if optional
                (apply str "\nKeyword arguments:\n\t"
@@ -127,7 +139,7 @@
        ;; Arglist.
        ~(vec
           (concat
-            (args->arglist required)
+            (args->arglist required-args)
             other-args
             ;; Could do something fancy to define multiple arity
             ;; versions with real optional arguments... instead, take the keyword
@@ -141,7 +153,8 @@
          ;; Include validation forms. The nils if they don't exist
          ;; can be safely ignored.
          ~(when session-required?
-            (session-key-checker-form name))
+            (session-key-checker-form
+              name))
          ~(when validation
             (validation-form name validation))
         
@@ -150,7 +163,7 @@
                ;; and optional (keyword) arguments.
                ~(optional-args->assoc-form
                   (assoc
-                    (merge (args->map required)
+                    (merge (args->map required-args)
                            other-map)
                     :method method
                     :format "JSON")
