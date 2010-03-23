@@ -36,7 +36,7 @@
   However, this method allows for more complex queries to be made. You can
   fetch data from one query and use it in another query within the same call.
   The WHERE clause is optional in the latter query, since it references data
-  that’s already been fetched. To reference the results of one query in another
+  that's already been fetched. To reference the results of one query in another
   query within the same call, specify its name in the FROM clause, preceded by
   #."
   :required [[queries :queries json/encode-to-str]]
