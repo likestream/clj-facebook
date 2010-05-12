@@ -5,6 +5,38 @@
   (:use com.twinql.clojure.facebook.api))
 
 (def-fb-api-call
+  stream-publish "stream.publish"
+  :docstring
+  "This method publishes a post into the stream -- on the Wall of the
+  current or specified user, or on the Wall of a friend or a Facebook
+  Page, group, or event connected to the current session or specified
+  user (but not to an application profile page). By default, this call
+  publishes to the current session user's Wall, but if you specify a
+  user ID, Facebook Page ID, group ID, or event ID as the target_id,
+  then the post appears on the Wall of the target, and not the user
+  posting the item."
+  :optional [[session-key :session_key]
+             [message :message]
+             [attachment :attachment json/encode-to-str]
+             [action-links :action_links json/encode-to-str]
+             [target-id :target_id]
+             [uid :uid]
+             [privacy :privacy json/encode-to-str]]
+  :validation [(or uid session-key)
+               (and (string? message)
+                    (let [#^String m message]
+                      (if (or (seq action-links)
+                              attachment)
+                        (<= (.length m) (int 10000))
+                        (<= (.length m) (int 420)))))
+               (or (nil? action-links)
+                   (sequential? action-links))
+               (or (nil? privacy)
+                   (map? privacy))
+               (or (nil? attachment)
+                   (map? attachment))])
+
+(def-fb-api-call
   profile-get-info "profile.getInfo"
   :docstring
   "Returns the specified user's application info section for the

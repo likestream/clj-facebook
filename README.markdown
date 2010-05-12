@@ -142,6 +142,7 @@ Use `doc` to see the arguments and description.
 * `friends.get`
 * `friends.getMutualFriends`
 * `profile.getInfo`
+* `stream.publish`
 
 ## Not Implemented ##
 
@@ -221,7 +222,6 @@ Use `doc` to see the arguments and description.
 * `stream.addLike`
 * `stream.getComments`
 * `stream.getFilters`
-* `stream.publish`
 * `stream.remove`
 * `stream.removeComment`
 * `stream.removeLike`
