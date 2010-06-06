@@ -3,7 +3,7 @@
 
 (ns com.twinql.clojure.facebook.sessionless
   (:refer-clojure)
-  (:require [org.danlarkin.json :as json])
+  (:require [clojure.contrib.json :as json])
   (:use com.twinql.clojure.facebook.util)
   (:use com.twinql.clojure.facebook.api))
 
@@ -11,13 +11,13 @@
   admin-ban-users "admin.banUsers"
   :docstring
   "Prevents users from accessing an application's canvas page and forums."
-  :required [[uids :uids json/encode-to-str]])
+  :required [[uids :uids json/json-str]])
 
 (def-fb-api-call
   admin-unban-users "admin.unbanUsers"
   :docstring
   "Unbans a list of users previously banned using admin.banUsers."
-  :required [[uids :uids json/encode-to-str]])
+  :required [[uids :uids json/json-str]])
 
 (def-fb-api-call
   admin-get-allocation "admin.getAllocation"
@@ -32,7 +32,7 @@
   "Returns values for the application metrics displayed on the Usage and HTTP
   Request tabs of the application's Insights page.
   See last-day, last-week, last-month."
-  :required [[metrics :metrics json/encode-to-str]]
+  :required [[metrics :metrics json/json-str]]
   :other-args [[start end period]]
   :other-map {:start_time (time->unix start)
               :end_time (time->unix end)
@@ -43,7 +43,7 @@
   :docstring
   "Sets the demographic restrictions for the application. This call lets you
   restrict users at the application level."
-  :required [[restrictions :restrictions json/encode-to-str]])
+  :required [[restrictions :restrictions json/json-str]])
 
 (def-fb-api-call
   admin-get-restriction-info "admin.getRestrictionInfo"
@@ -56,7 +56,7 @@
   "Sets (several) property values for an application. These values previously
   were only accessible through the Facebook Developer application.
   properties must be a map."
-  :required [[properties :properties json/encode-to-str]])
+  :required [[properties :properties json/json-str]])
 
 (def-fb-api-call
   admin-get-app-properties "admin.getAppProperties"
@@ -64,14 +64,14 @@
   "Gets property values previously set for an application on either the
   Facebook Developer application or the with the admin.setAppProperties call.
   properties is a vector."
-  :required [[properties :properties json/encode-to-str]])
+  :required [[properties :properties json/json-str]])
 
 (def-fb-api-call
   admin-get-banned-users "admin.getBannedUsers"
   :docstring
   "Returns a list of users who were banned by an application using
   admin.banUsers."
-  :optional [[uids :uids json/encode-to-str]]
+  :optional [[uids :uids json/json-str]]
   :validation [(sequential? uids)])
 
 (def-fb-api-call
@@ -115,7 +115,7 @@
   page until the user clicks it to add the section."
   :required [[title :title]
              [type :type]
-             [info-fields :info_fields json/encode-to-str]
+             [info-fields :info_fields json/json-str]
              [uid :uid]]
   :validation [({1 5} type)
                (sequential? info-fields)])
@@ -126,7 +126,7 @@
   "Specifies the available items for a field in an application info section.
   These options populate the typeahead for a thumbnail."
   :required [[field :field]
-             [options :options json/encode-to-str]]
+             [options :options json/json-str]]
   :validation [(and (map? options)     ; Only this will encode correctly.
                     (contains? options :label)
                     (contains? options :link))])

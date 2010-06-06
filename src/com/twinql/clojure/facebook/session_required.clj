@@ -6,7 +6,7 @@
 
 (ns com.twinql.clojure.facebook.session-required
   (:refer-clojure)
-  (:require [org.danlarkin.json :as json])
+  (:require [clojure.contrib.json :as json])
   (:use com.twinql.clojure.facebook.util)
   (:use com.twinql.clojure.facebook.api))
 
@@ -80,7 +80,7 @@
    specified template bundle. By default, this method can publish one line
    stories to the user's Wall only."
    :required [[template-bundle-id :template_bundled_id]
-              [template-data      :template_data json/encode-to-str]]  ; JSON object.
+              [template-data      :template_data json/json-str]]  ; JSON object.
    
    :optional [[target-ids   :target_ids seq->comma-separated]  ; List of IDs.
               [body-general :body_general]

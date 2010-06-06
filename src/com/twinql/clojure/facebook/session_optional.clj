@@ -1,6 +1,6 @@
 (ns com.twinql.clojure.facebook.session-optional
   (:refer-clojure)
-  (:require [org.danlarkin.json :as json])
+  (:require [clojure.contrib.json :as json])
   (:use com.twinql.clojure.facebook.util)
   (:use com.twinql.clojure.facebook.api))
 
@@ -17,11 +17,11 @@
   posting the item."
   :optional [[session-key :session_key]
              [message :message]
-             [attachment :attachment json/encode-to-str]
-             [action-links :action_links json/encode-to-str]
+             [attachment :attachment json/json-str]
+             [action-links :action_links json/json-str]
              [target-id :target_id]
              [uid :uid]
-             [privacy :privacy json/encode-to-str]]
+             [privacy :privacy json/json-str]]
   :validation [(or uid session-key)
                (and (string? message)
                     (let [#^String m message]
@@ -71,7 +71,7 @@
   that's already been fetched. To reference the results of one query in another
   query within the same call, specify its name in the FROM clause, preceded by
   #."
-  :required [[queries :queries json/encode-to-str]]
+  :required [[queries :queries json/json-str]]
   :optional [[session-key :session_key]]
   :validation [(map? queries)
                (every? string? (vals queries))

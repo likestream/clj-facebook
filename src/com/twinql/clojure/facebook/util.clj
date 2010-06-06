@@ -1,6 +1,6 @@
 (ns com.twinql.clojure.facebook.util
   (:refer-clojure)
-  (:require [org.danlarkin.json :as json]))
+  (:require [clojure.contrib.json :as json]))
 
 (defn #^String as-str
   "Because contrib's isn't typed correctly."
@@ -87,7 +87,7 @@
 
 ;; The name is more documentation than anything.
 (defn decode-json-array [x]
-  (json/decode-from-str x))
+  (json/read-json x true))
 
 (defn assoc-when [coll key val]
   (if val

@@ -7,19 +7,13 @@
      (java.lang Exception)
      (java.net URI URLEncoder))
   (:require 
-     [com.twinql.clojure.http :as http]
-     [org.danlarkin.json :as json]))
+     [com.twinql.clojure.http :as http]))
 
 (def *facebook-rest-api*  (new URI "http://api.facebook.com/restserver.php"))
 (def *facebook-login*     (new URI "http://www.facebook.com/login.php"))
 (def *facebook-authorize* (new URI "http://www.facebook.com/authorize.php"))
 (def *facebook-http-params*
      (http/map->params {:tcp-nodelay true}))
-
-;; I'd love to roll this into the HTTP library, but I don't want to impose
-;; a dependency on the JSON library...
-(defmethod http/entity-as :json [entity as status]
-  (json/decode-from-reader (http/entity-as entity :reader status)))
 
 (defn make-facebook-request 
   "`args` should include your method."
