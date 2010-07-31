@@ -4,6 +4,11 @@
   (:use com.twinql.clojure.facebook.sig)
   (:use com.twinql.clojure.facebook.util)
   (:import 
+     (org.apache.http.conn.params
+       ConnManagerPNames
+       ConnPerRoute)
+     (org.apache.http.conn.routing
+       HttpRoute)
      (java.lang Exception)
      (java.net URI URLEncoder))
   (:require 
@@ -14,6 +19,18 @@
 (def *facebook-authorize* (new URI "http://www.facebook.com/authorize.php"))
 (def *facebook-http-params*
      (http/map->params {:tcp-nodelay true}))
+
+;; By default, use a thread-safe client connection manager
+;; with a limit of 100 concurrent connections.
+;; We only ever use JSON, so clj-apache-http will close them
+;; automatically on our behalf.
+(def *facebook-ccm* (http/thread-safe-connection-manager
+                      (http/scheme-registry true)
+                      (doto (http/connection-limits 100)
+                        (.setParameter ConnManagerPNames/MAX_CONNECTIONS_PER_ROUTE
+                                       (proxy [ConnPerRoute] []
+                                         (#^int getMaxForRoute [#^HttpRoute route]
+                                           100))))))
 
 (defn make-facebook-request 
   "`args` should include your method."
@@ -39,6 +56,7 @@
                    :session_key *session-key*)
                   secret)]
        (http/post *facebook-rest-api*
+                  :connection-manager *facebook-ccm*
                   :query query
                   :as :json
                   :parameters *facebook-http-params*))))
