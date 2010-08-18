@@ -85,6 +85,35 @@
              [uid :uid]])
 
 (def-fb-api-call
+  users-has-app-permission "users.hasAppPermission"
+  :docstring
+  "Checks whether the user has granted your application an extended permission.
+   For non-desktop applications, you may pass the ID of the user on whose
+   behalf you're making this call. If you don't specify a user with the uid
+   parameter but you do specify a session_key, then that user whose session it
+   is will be the target of the call."
+  :required [[ext-perm :ext_perm]]
+  :optional [[uid :uid]
+             [session-key :session_key]]
+  :validation [(string? ext-perm)
+               (or uid session-key)
+               (not (and uid session-key))])
+
+(def-fb-api-call
+  users-is-app-user "users.isAppUser"
+  :docstring
+  "Returns whether the user (either the session user or user specified by uid)
+   has authorized the calling application.
+   For Web applications, you must pass either the ID of the user on whose behalf
+   you're making this call or the session key for that user, but not both. If
+   you don't specify a user with the uid parameter, then that user whose session
+   it is will be the target of the call."
+  :optional [[uid :uid]
+             [session-key :session_key]]
+  :validation [(or uid session-key)
+               (not (and uid session-key))])
+
+(def-fb-api-call
   users-get-info "users.getInfo"
   :docstring
   "Returns a wide array of user-specific information for each user

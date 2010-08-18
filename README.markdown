@@ -143,6 +143,8 @@ Use `doc` to see the arguments and description.
 * `friends.getMutualFriends`
 * `profile.getInfo`
 * `stream.publish`
+* `users.hasAppPermission`
+* `users.isAppUser`
 
 ## Not Implemented ##
 
@@ -226,8 +228,6 @@ Use `doc` to see the arguments and description.
 * `stream.removeComment`
 * `stream.removeLike`
 * `users.getInfo`
-* `users.hasAppPermission`
-* `users.isAppUser`
 * `users.setStatus`
 
 ## Authors ##
