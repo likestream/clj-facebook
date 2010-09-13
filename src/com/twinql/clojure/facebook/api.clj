@@ -66,11 +66,14 @@
   `(and 
      ~@(map (partial v-form name) validation)))
 
-(defn optional-args-binding-form [optional args-var]
+(defn optional-args-binding-form [optional args-var include-global-session-key?]
   (when (and optional
              (not (empty? optional)))
-    (list {:keys (args->arglist optional)}
-           `(apply hash-map ~args-var))))
+    (list
+      (if include-global-session-key?
+        {:keys (args->arglist optional) :or {'session-key `*session-key*}}
+        {:keys (args->arglist optional)})
+      `(apply hash-map ~args-var))))
 
 ;; This looks damn ugly. Sorry.
 (defmacro def-fb-api-call
@@ -95,6 +98,8 @@
       :validation: a sequence of forms. These are inlined directly as code,
                    with a descriptive exception, so make them pretty.
       :session-required?: if true, code is inserted to check for a session key.
+      :bind-session-key?: if true, the value of *session-key* is coalesced into
+                   session-key before running the body. Useful for session-optional.
   
    Arguments (required, optional) should be provided as sequences:
    
@@ -108,6 +113,7 @@
   (let [{:keys [docstring required optional other-args other-map
                 validation
                 session-required?
+                bind-session-key?
                 response]}
         (apply hash-map opt)
         args-var (gensym "args")
@@ -146,7 +152,7 @@
               `(& ~args-var))))
        
        ;; Destructure keyword arguments.
-       (let [~@(optional-args-binding-form optional args-var)]
+       (let [~@(optional-args-binding-form optional args-var bind-session-key?)]
          
          ;; Include validation forms. The nils if they don't exist
          ;; can be safely ignored.

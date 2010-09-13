@@ -22,6 +22,7 @@
              [target-id :target_id]
              [uid :uid]
              [privacy :privacy json/json-str]]
+  :bind-session-key? true
   :validation [(or uid session-key)
                (and (string? message)
                     (let [#^String m message]
@@ -45,6 +46,7 @@
   content returned is specified within info_fields."
   :optional [[uid :uid]
              [session-key :session_key]]
+  :bind-session-key? true
   :validation [(or uid session-key)])
 
 (def-fb-api-call
@@ -55,6 +57,7 @@
   selecting multiple fields with the same name or with selecting multiple
   \"anonymous\" fields (for example, SELECT 1+2, 3+4 ...)."
   :required [[query :query]]
+  :bind-session-key? true
   :optional [[session-key :session_key]])
 
 (def-fb-api-call
@@ -73,6 +76,7 @@
   #."
   :required [[queries :queries json/json-str]]
   :optional [[session-key :session_key]]
+  :bind-session-key? true
   :validation [(map? queries)
                (every? string? (vals queries))
                (every? query-name? (keys queries))])
@@ -80,6 +84,7 @@
 (def-fb-api-call
   friends-get "friends.get"
   :docstring ""
+  :bind-session-key? true
   :optional [[session-key :session_key]
              [flid :flid]
              [uid :uid]])
@@ -93,6 +98,7 @@
    parameter but you do specify a session_key, then that user whose session it
    is will be the target of the call."
   :required [[ext-perm :ext_perm]]
+  :bind-session-key? true
   :optional [[uid :uid]
              [session-key :session_key]]
   :validation [(string? ext-perm)
@@ -110,6 +116,7 @@
    it is will be the target of the call."
   :optional [[uid :uid]
              [session-key :session_key]]
+  :bind-session-key? true
   :validation [(or uid session-key)
                (not (and uid session-key))])
 
@@ -129,11 +136,13 @@
   users.getStandardInfo instead."
   :required [[uids :uids seq->comma-separated]
              [fields :fields seq->comma-separated]]
+  :bind-session-key? true
   :optional [[session-key :session_key]])
 
 (def-fb-api-call
   friends-get-mutual-friends "friends.getMutualFriends"
   :docstring ""
+  :bind-session-key? true
   :optional [[session-key :session_key]
              [source-uid :source_uid]]
   :required [[target-uid :target_uid]]
@@ -150,5 +159,6 @@
   well as on their notifications page."
   :required [[to_ids :to_ids seq->comma-separated]
              [notification :notification]]
+  :bind-session-key? true
   :optional [[session-key :session-key]
              [type :type]])
